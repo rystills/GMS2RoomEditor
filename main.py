@@ -31,6 +31,10 @@ class GM(object):
 		
 		#store directories
 		GM.rootDir = os.path.split(os.path.abspath(sys.argv[0]))[0]
+		
+		#init screen and window caption
+		GM.screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
+		pygame.display.set_caption("Room Editor")
 	
 	#update mouse click and press variables
 	@staticmethod
@@ -88,7 +92,19 @@ class GM(object):
 				colorkey = image.get_at((0,0))
 			image.set_colorkey(colorkey, RLEACCEL)
 		return image
+	
+	#delete all UI objects
+	@staticmethod
+	def clearUI():
+		for i in GM.UI:
+			i.kill()
 			
+	#update the display and width,height vars to the specified dimensions
+	@staticmethod
+	def updateScreenDimensions(width,height):
+		pygame.display.set_mode((width,height))
+		GM.screenWidth = width
+		GM.screenHeight = height
 		
 #simple mouse-based button class
 class Button(pygame.sprite.Sprite):
@@ -157,14 +173,15 @@ def writeLastUsedProject(projName):
 		file.truncate()
 		file.write(projName)
 			
-#open a file dialog box for the user to locate and select their desired GameMaker Studio 2 project	
+#open a file dialog box for the user to locate and select their desired GameMaker Studio 2 project
 def openProjectDirectory():
 	root = Tk()
 	root.withdraw()
-	#normalize the path returned by tkinter to the current OS path type
-	projFile = os.path.normpath(askopenfilename(title = "Select GameMaker Studio 2 Project File"))
+	projFile = askopenfilename(title = "Select GameMaker Studio 2 Project File")
 	root.destroy()
-	if (len(projFile) > 1):
+	if (len(projFile) > 0):
+		#normalize the path returned by tkinter to the current OS path type
+		projFile = os.path.normpath(projFile)
 		writeLastUsedProject(projFile)
 		openProject(projFile)
 	
@@ -176,29 +193,36 @@ def openLastProject():
 			if (len(projFile) > 1):
 				openProject(projFile)
 
-
 #open the project pointed to by projFile
 def openProject(projFile):
 	#init projet directories
 	GM.projDir = projFile[:projFile.rfind(os.path.sep)]
 	GM.sprDir = os.path.join(GM.projDir,"sprites")
 	GM.objDir = os.path.join(GM.projDir,"objects")
-	GM.rmDir = os.path.join(GM.projDir,"rooms")	
+	GM.rmDir = os.path.join(GM.projDir,"rooms")
+	GM.clearUI()
+	GM.updateScreenDimensions(1366,768)
+	#create a button for each room
+	rmList = (next(os.walk(GM.rmDir))[1])
+	for i in range(len(rmList)):
+		GM.UI.add(Button(rmList[i],GM.fontSmall,30,30 + 50*i,openRoom,[rmList[i]],"left"))
+	
+#open the specified room
+def openRoom(rm):
+	print(rm)
+	
 
-#this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
+#main function: init game, then run the core game loop
 def main():
 	#initialize the pygame engine
 	pygame.init()
 	#call GameManager setup
 	GM.init(240,120)
-	#init screen and window caption
-	screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
-	pygame.display.set_caption("Room Editor")
 	
 	#create load project button
-	GM.UI.add(Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 - 20,openProjectDirectory))
+	GM.UI.add(Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))
 	#create open last project button
-	GM.UI.add(Button("Open Last Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 + 20,openLastProject))
+	GM.UI.add(Button("Open Last Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 + 20, openLastProject))
 	
 	#Main Loop; runs until game is exited
 	while GM.running:
@@ -206,9 +230,9 @@ def main():
 		if (GM.tick()):
 			break		
 		#render the solid color (black) background to prepare the screen for a fresh game render
-		screen.fill((0,0,0))
+		GM.screen.fill((0,0,0))
 		#render objects
-		GM.UI.draw(screen)
+		GM.UI.draw(GM.screen)
 		#push final screen render to the display	 
 		pygame.display.flip()
 	
