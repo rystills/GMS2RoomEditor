@@ -76,12 +76,14 @@ class GM(object):
 		
 #simple mouse-based button class
 class Button():
-	#button init; store this button's text string and font
-	def __init__(self,text,font,x,y,align="center"):
+	#button init; store this button's properties and prepare its surface
+	def __init__(self,text,font,x,y,function,args=[],align="center"):
 		self.text = text
 		self.font = font
 		self.x = x
 		self.y = y
+		self.function = function
+		self.args = args
 		self.align = align
 		self.color = pygame.Color(200,200,200,255)
 		self.updateSurf();
@@ -108,8 +110,7 @@ class Button():
 			
 			#if mouse button was just released on us, trigger a press 
 			if (GM.mouseReleasedLeft and self.pressed):
-				#script_execute(self.function);
-				print("button pressed")
+				self.function(*self.args)
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
@@ -131,6 +132,15 @@ class Button():
 		if (white != self.color.r):
 			self.color = pygame.Color(white,white,white,255)
 			self.updateSurf()
+		
+#open a file dialog box for the user to select the root directory of their desired GameMaker Studio 2 project	
+def openProjectDirectory():
+	root = Tk()
+	root.withdraw()
+	fileName = askopenfilename(title = "Select GameMaker Studio 2 Project File") 
+	if (len(fileName) > 0):
+		print(fileName)
+	root.destroy()	
 
 #this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
 def main():
@@ -143,7 +153,7 @@ def main():
 	pygame.display.set_caption("Room Editor")
 	
 	#create load project button
-	btn = Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2)
+	btn = Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2,openProjectDirectory)
 	
 	#Main Loop; runs until game is exited
 	while GM.running:
