@@ -1,5 +1,5 @@
 #Import Modules
-import pygame, os
+import pygame, os, sys
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE, RLEACCEL
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
@@ -28,6 +28,9 @@ class GM(object):
 		
 		#store object collections
 		GM.UI = pygame.sprite.LayeredUpdates() 
+		
+		#store directories
+		GM.rootDir = os.path.split(os.path.abspath(sys.argv[0]))[0]
 	
 	#update mouse click and press variables
 	@staticmethod
@@ -93,7 +96,6 @@ class Button(pygame.sprite.Sprite):
 	def __init__(self,text,font,x,y,function,args=[],align="center"):
 		#Call the parent class (Sprite) constructor
 		pygame.sprite.Sprite.__init__(self)
-		
 		self.text = text
 		self.font = font
 		self.x = x
@@ -159,9 +161,10 @@ def writeLastUsedProject(projName):
 def openProjectDirectory():
 	root = Tk()
 	root.withdraw()
-	projFile = askopenfilename(title = "Select GameMaker Studio 2 Project File") 
+	#normalize the path returned by tkinter to the current OS path type
+	projFile = os.path.normpath(askopenfilename(title = "Select GameMaker Studio 2 Project File"))
 	root.destroy()
-	if (len(projFile) > 0):
+	if (len(projFile) > 1):
 		writeLastUsedProject(projFile)
 		openProject(projFile)
 	
@@ -169,14 +172,18 @@ def openProjectDirectory():
 def openLastProject():
 	if (os.path.isfile("lastProject.cfg")):
 		with open("lastProject.cfg", "r") as file:
-			projFile= file.readline().strip()
-			if (len(projFile) > 0):
+			projFile = file.readline().strip()
+			if (len(projFile) > 1):
 				openProject(projFile)
 
 
 #open the project pointed to by projFile
 def openProject(projFile):
-	print(projFile)
+	#init projet directories
+	GM.projDir = projFile[:projFile.rfind(os.path.sep)]
+	GM.sprDir = os.path.join(GM.projDir,"sprites")
+	GM.objDir = os.path.join(GM.projDir,"objects")
+	GM.rmDir = os.path.join(GM.projDir,"rooms")	
 
 #this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
 def main():
