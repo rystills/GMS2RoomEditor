@@ -3,40 +3,122 @@ import pygame, os
 from pygame.locals import QUIT, KEYDOWN, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_RETURN, K_ESCAPE, K_f, K_q, RLEACCEL
 from tkinter import *
 from tkinter.filedialog import askopenfilename
+from msilib.schema import Font
 
-#main game class; houses most game related variables and methods
-class GameManager():
-	def __init__(self, screenWidthIn, screenHeightIn):
+#static main game class; houses most game related variables and methods
+class GM(object):
+	#init game vars
+	@staticmethod
+	def setup(screenWidthIn, screenHeightIn):
 		#init screen width and height (in pixels)
-		self.screenWidth = screenWidthIn
-		self.screenHeight = screenHeightIn
+		GM.screenWidth = screenWidthIn
+		GM.screenHeight = screenHeightIn
 		
 		#init fonts (each text size should have its own font)
-		self.fontSmall = pygame.font.Font(None, 12)
+		GM.fontSmall = pygame.font.Font(None, 12)
 		
 		#init game-related variables
-		self.running = True
-		self.deltaTime = 0
-		self.clock = pygame.time.Clock()
+		GM.running = True
+		GM.deltaTime = 0
+		GM.clock = pygame.time.Clock()
 		
+		#init input vars
+		GM.mousePressedLeft = False
+		GM.mouseDownLeft = False
+		GM.mouseReleasedLeft = False
+	
 	#update game
-	def tick(self):
+	@staticmethod
+	def tick():
 		#update simulation deltaTime
-		self.deltaTime = self.clock.tick(60) / 1000
+		GM.deltaTime = GM.clock.tick(60) / 1000
+		
+		#update mouse click and press variables
+		if (pygame.mouse.get_pressed()[0]):
+			GM.mousePressedLeft = not GM.mouseDownLeft
+			GM.mouseDownLeft = True
+			GM.mouseReleasedLeft = False
+		else:
+			GM.mouseReleasedLeft = GM.mouseDownLeft
+			GM.mouseDownLeft = False
+			GM.mousePressedLeft = False
+			
+		
+#simple mouse-based button class
+class Button():
+	#button init; store this button's text string and font
+	def __init__(self,text,font,x,y,align="center"):
+		self.text = text
+		self.font = font
+		self.x = x
+		self.y = y
+		self.align = align
+		self.calculateBounds()
+		self.pressed = False
+		
+	#calculate the top, bottom, left, and right bounds of this button
+	def calculateBounds(self):
+		size = self.font.size(self.text)
+		self.width = size[0]
+		self.height = size[1]
+		
+	#return whether or not the point located at px,py is contained in our bounds
+	def pointInBounds(self,pos):
+		#first calculate our bounds based off of our extends and alignment
+		left = self.x - (0 if self.align == "left" else self.width/2)
+		right = self.x + (self.width if self.align == "left" else self.width/2)
+		top = self.y
+		bottom = self.y - self.height
+		
+		#now determine whether or not the point is in our calculated bounds
+		return pos[0] >= left and pos[0] <= right and pos[1] <= top and pos[1] >= bottom
+	
+	#update button state based on mouse interaction
+	def update(self):
+		#check mouse button status
+		#check if mouse is on this button 
+		self.state = "neutral"
+		if (self.pointInBounds(pygame.mouse.get_pos())):
+			#if mouse button was just pressed on us, toggle pressed on
+			if (GM.mousePressedLeft): 
+				self.pressed = True
+			
+			#if mouse button was just released on us, trigger a press 
+			if (GM.mouseReleasedLeft and self.pressed):
+				#script_execute(self.function);
+				print("button pressed")
+			
+			#set state based off of pressed
+			self.state = "press" if self.pressed else "hover"
+		
+		
+		#if mouse button is not held down, toggle pressed off
+		if (not GM.mouseDownLeft): 
+			self.pressed = False
+		
+		'''#color blend based off of state
+		self.blendWhiteness = 200;
+		if (self.state == "press") {
+			self.blendWhiteness = 145;
+		}
+		else if (self.state == "hover") {
+			self.blendWhiteness = 255;
+		}
+		image_blend = make_color_rgb(self.blendWhiteness,self.blendWhiteness,self.blendWhiteness);'''
 
 #this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
 def main():
 	#initialize the pygame engine
 	pygame.init()
-	#instantiate class to maintain game state
-	gameManager = GameManager(1920,1080)
+	#call GameManager setup
+	GM.setup(1920,1080)
 	#init screen and window caption
-	screen = pygame.display.set_mode([gameManager.screenWidth, gameManager.screenHeight])
+	screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
 	pygame.display.set_caption("Room Editor")
 	#Main Loop; runs until game is exited
-	while gameManager.running:
+	while GM.running:
 		#update the game at a steady 60 fps if possible (divide by 1000 to convert from milliseconds to seconds)
-		gameManager.tick();
+		GM.tick();
 		#render the solid color (cool green) background to prepare the screen for a fresh game render
 		screen.fill((160,200,160))
 		#push final screen render to the display	 
