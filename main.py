@@ -8,7 +8,7 @@ from tkinter.filedialog import askopenfilename
 class GM(object):
 	#init game vars
 	@staticmethod
-	def setup(screenWidthIn, screenHeightIn):
+	def init(screenWidthIn, screenHeightIn):
 		#init screen width and height (in pixels)
 		GM.screenWidth = screenWidthIn
 		GM.screenHeight = screenHeightIn
@@ -27,7 +27,7 @@ class GM(object):
 		GM.mouseReleasedLeft = False
 		
 		#store object collections
-		GM.activeButtons = object
+		GM.UI = pygame.sprite.LayeredUpdates() 
 	
 	#update mouse click and press variables
 	@staticmethod
@@ -49,14 +49,24 @@ class GM(object):
 		for event in pygame.event.get():
 			if (event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)):
 				GM.running = False
+				return True
+	
+	#update all objects
+	@staticmethod
+	def updateObjects():
+		for i in GM.UI:
+			i.update()
 	
 	#update game
 	@staticmethod
 	def tick():
-		#update simulation deltaTime
+		#update simulation deltaTime, running at 60 fps / 1000 milliseconds if possible
 		GM.deltaTime = GM.clock.tick(60) / 1000
+		#if the user quit, don't bother doing anything else
+		if (GM.checkQuit()):
+			return True
 		GM.updateMouseVars()
-		GM.checkQuit()
+		GM.updateObjects()
 	
 	#load an image, optionally setting a colorkey - adapted from the pygame chimp example
 	@staticmethod
@@ -141,42 +151,57 @@ class Button(pygame.sprite.Sprite):
 			
 #store a local reference to the last used project for future use
 def writeLastUsedProject(projName):
-	with open("lastProject.cfg", "r+") as file:
+	with open("lastProject.cfg", "w") as file:
 		file.truncate()
 		file.write(projName)
 			
-#open a file dialog box for the user to select the root directory of their desired GameMaker Studio 2 project	
+#open a file dialog box for the user to locate and select their desired GameMaker Studio 2 project	
 def openProjectDirectory():
 	root = Tk()
 	root.withdraw()
-	fileName = askopenfilename(title = "Select GameMaker Studio 2 Project File") 
-	if (len(fileName) > 0):
-		writeLastUsedProject(fileName)
-	root.destroy()	
+	projFile = askopenfilename(title = "Select GameMaker Studio 2 Project File") 
+	root.destroy()
+	if (len(projFile) > 0):
+		writeLastUsedProject(projFile)
+		openProject(projFile)
+	
+#open the last project stored in lastProject.cfg, if one exists
+def openLastProject():
+	if (os.path.isfile("lastProject.cfg")):
+		with open("lastProject.cfg", "r") as file:
+			projFile= file.readline().strip()
+			if (len(projFile) > 0):
+				openProject(projFile)
+
+
+#open the project pointed to by projFile
+def openProject(projFile):
+	print(projFile)
 
 #this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
 def main():
 	#initialize the pygame engine
 	pygame.init()
 	#call GameManager setup
-	GM.setup(240,120)
+	GM.init(240,120)
 	#init screen and window caption
 	screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
 	pygame.display.set_caption("Room Editor")
 	
 	#create load project button
-	btn = Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2,openProjectDirectory)
+	GM.UI.add(Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 - 20,openProjectDirectory))
+	#create open last project button
+	GM.UI.add(Button("Open Last Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 + 20,openLastProject))
 	
 	#Main Loop; runs until game is exited
 	while GM.running:
-		#update the game at a steady 60 fps if possible (divide by 1000 to convert from milliseconds to seconds)
-		GM.tick();
-		#update objects
-		btn.update()
+		#update the game, exiting immediately if the user quit
+		if (GM.tick()):
+			break		
 		#render the solid color (black) background to prepare the screen for a fresh game render
 		screen.fill((0,0,0))
 		#render objects
-		screen.blit(btn.image, btn.rect)
+		GM.UI.draw(screen)
 		#push final screen render to the display	 
 		pygame.display.flip()
 	
