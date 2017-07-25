@@ -3,7 +3,6 @@ import pygame, os
 from pygame.locals import QUIT, KEYDOWN, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_RETURN, K_ESCAPE, K_f, K_q, RLEACCEL
 from tkinter import *
 from tkinter.filedialog import askopenfilename
-from msilib.schema import Font
 
 #static main game class; houses most game related variables and methods
 class GM(object):
@@ -27,21 +26,52 @@ class GM(object):
 		GM.mouseDownLeft = False
 		GM.mouseReleasedLeft = False
 	
+	#update mouse click and press variables
+	@staticmethod
+	def updateMouseVars():
+		#left mouse button down
+		if (pygame.mouse.get_pressed()[0]):
+			GM.mousePressedLeft = not GM.mouseDownLeft
+			GM.mouseDownLeft = True
+			GM.mouseReleasedLeft = False
+		#left mouse button up
+		else:
+			GM.mouseReleasedLeft = GM.mouseDownLeft
+			GM.mouseDownLeft = False
+			GM.mousePressedLeft = False
+			
+	#check if the user has pressed the escape key or the close button, and if so, quit
+	@staticmethod
+	def checkQuit():
+		for event in pygame.event.get():
+			if (event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)):
+				GM.running = False
+	
 	#update game
 	@staticmethod
 	def tick():
 		#update simulation deltaTime
 		GM.deltaTime = GM.clock.tick(60) / 1000
-		
-		#update mouse click and press variables
-		if (pygame.mouse.get_pressed()[0]):
-			GM.mousePressedLeft = not GM.mouseDownLeft
-			GM.mouseDownLeft = True
-			GM.mouseReleasedLeft = False
-		else:
-			GM.mouseReleasedLeft = GM.mouseDownLeft
-			GM.mouseDownLeft = False
-			GM.mousePressedLeft = False
+		GM.updateMouseVars()
+		GM.checkQuit()
+	
+	#load an image, optionally setting a colorkey - adapted from the pygame chimp example
+	@staticmethod
+	def loadImage(imageName, convertAlpha=False, colorkey=None): 
+		fullname = os.path.join(imageName)
+		try:
+			image = pygame.image.load(fullname)
+		except:
+			print('Cannot load image:', fullname)
+			raise SystemExit
+	
+		#convert_alpha should be used only for images with per-pixel alpha transparency
+		image = image.convert() if not convertAlpha else image.convert_alpha()
+		if colorkey is not None:
+			if colorkey is -1:
+				colorkey = image.get_at((0,0))
+			image.set_colorkey(colorkey, RLEACCEL)
+		return image
 			
 		
 #simple mouse-based button class
@@ -111,7 +141,7 @@ def main():
 	#initialize the pygame engine
 	pygame.init()
 	#call GameManager setup
-	GM.setup(1920,1080)
+	GM.setup(240,120)
 	#init screen and window caption
 	screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
 	pygame.display.set_caption("Room Editor")
