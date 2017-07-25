@@ -14,7 +14,7 @@ class GM(object):
 		GM.screenHeight = screenHeightIn
 		
 		#init fonts (each text size should have its own font)
-		GM.fontSmall = pygame.font.Font(None, 12)
+		GM.fontSmall = pygame.font.Font(None, 24)
 		
 		#init game-related variables
 		GM.running = True
@@ -83,32 +83,25 @@ class Button():
 		self.x = x
 		self.y = y
 		self.align = align
-		self.calculateBounds()
+		self.color = pygame.Color(200,200,200,255)
+		self.updateSurf();
 		self.pressed = False
 		
-	#calculate the top, bottom, left, and right bounds of this button
-	def calculateBounds(self):
-		size = self.font.size(self.text)
-		self.width = size[0]
-		self.height = size[1]
-		
-	#return whether or not the point located at px,py is contained in our bounds
-	def pointInBounds(self,pos):
-		#first calculate our bounds based off of our extends and alignment
-		left = self.x - (0 if self.align == "left" else self.width/2)
-		right = self.x + (self.width if self.align == "left" else self.width/2)
-		top = self.y
-		bottom = self.y - self.height
-		
-		#now determine whether or not the point is in our calculated bounds
-		return pos[0] >= left and pos[0] <= right and pos[1] <= top and pos[1] >= bottom
+	#update our drawSurface (only needs to happen when our color or text is altered)
+	def updateSurf(self):
+		self.surf = self.font.render(self.text, True, self.color)
+		self.rect = self.surf.get_rect();
+		if (self.align == "center"):
+			self.rect.center = (self.x,self.y)
+		else:
+			self.rect.topleft = (self.x,self.y)
 	
 	#update button state based on mouse interaction
 	def update(self):
 		#check mouse button status
 		#check if mouse is on this button 
 		self.state = "neutral"
-		if (self.pointInBounds(pygame.mouse.get_pos())):
+		if (self.rect.collidepoint(pygame.mouse.get_pos())):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
 				self.pressed = True
@@ -126,15 +119,18 @@ class Button():
 		if (not GM.mouseDownLeft): 
 			self.pressed = False
 		
-		'''#color blend based off of state
-		self.blendWhiteness = 200;
-		if (self.state == "press") {
-			self.blendWhiteness = 145;
-		}
-		else if (self.state == "hover") {
-			self.blendWhiteness = 255;
-		}
-		image_blend = make_color_rgb(self.blendWhiteness,self.blendWhiteness,self.blendWhiteness);'''
+		#color blend based off of state
+		white = 200;
+		if (self.state == "press"):
+			white = 145
+		
+		elif (self.state == "hover"):
+			white = 255
+			
+		#update our draw surface if our color changed
+		if (white != self.color.r):
+			self.color = pygame.Color(white,white,white,255)
+			self.updateSurf()
 
 #this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
 def main():
@@ -145,12 +141,20 @@ def main():
 	#init screen and window caption
 	screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
 	pygame.display.set_caption("Room Editor")
+	
+	#create load project button
+	btn = Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2)
+	
 	#Main Loop; runs until game is exited
 	while GM.running:
 		#update the game at a steady 60 fps if possible (divide by 1000 to convert from milliseconds to seconds)
 		GM.tick();
-		#render the solid color (cool green) background to prepare the screen for a fresh game render
-		screen.fill((160,200,160))
+		#update objects
+		btn.update()
+		#render the solid color (black) background to prepare the screen for a fresh game render
+		screen.fill((0,0,0))
+		#render objects
+		screen.blit(btn.surf, btn.rect)
 		#push final screen render to the display	 
 		pygame.display.flip()
 	
