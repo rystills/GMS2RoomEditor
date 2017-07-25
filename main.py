@@ -1,7 +1,7 @@
 #Import Modules
 import pygame, os
-from pygame.locals import QUIT, KEYDOWN, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_RETURN, K_ESCAPE, K_f, K_q, RLEACCEL
-from tkinter import *
+from pygame.locals import QUIT, KEYDOWN, K_ESCAPE, RLEACCEL
+from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 
 #static main game class; houses most game related variables and methods
@@ -25,6 +25,9 @@ class GM(object):
 		GM.mousePressedLeft = False
 		GM.mouseDownLeft = False
 		GM.mouseReleasedLeft = False
+		
+		#store object collections
+		GM.activeButtons = object
 	
 	#update mouse click and press variables
 	@staticmethod
@@ -75,9 +78,12 @@ class GM(object):
 			
 		
 #simple mouse-based button class
-class Button():
+class Button(pygame.sprite.Sprite):
 	#button init; store this button's properties and prepare its surface
 	def __init__(self,text,font,x,y,function,args=[],align="center"):
+		#Call the parent class (Sprite) constructor
+		pygame.sprite.Sprite.__init__(self)
+		
 		self.text = text
 		self.font = font
 		self.x = x
@@ -86,13 +92,13 @@ class Button():
 		self.args = args
 		self.align = align
 		self.color = pygame.Color(200,200,200,255)
-		self.updateSurf();
+		self.updateImage();
 		self.pressed = False
 		
 	#update our drawSurface (only needs to happen when our color or text is altered)
-	def updateSurf(self):
-		self.surf = self.font.render(self.text, True, self.color)
-		self.rect = self.surf.get_rect();
+	def updateImage(self):
+		self.image = self.font.render(self.text, True, self.color)
+		self.rect = self.image.get_rect();
 		if (self.align == "center"):
 			self.rect.center = (self.x,self.y)
 		else:
@@ -131,15 +137,21 @@ class Button():
 		#update our draw surface if our color changed
 		if (white != self.color.r):
 			self.color = pygame.Color(white,white,white,255)
-			self.updateSurf()
-		
+			self.updateImage()
+			
+#store a local reference to the last used project for future use
+def writeLastUsedProject(projName):
+	with open("lastProject.cfg", "r+") as file:
+		file.truncate()
+		file.write(projName)
+			
 #open a file dialog box for the user to select the root directory of their desired GameMaker Studio 2 project	
 def openProjectDirectory():
 	root = Tk()
 	root.withdraw()
 	fileName = askopenfilename(title = "Select GameMaker Studio 2 Project File") 
 	if (len(fileName) > 0):
-		print(fileName)
+		writeLastUsedProject(fileName)
 	root.destroy()	
 
 #this function is called when the program starts. it initializes everything it needs, then runs in a loop until the function returns
@@ -164,7 +176,7 @@ def main():
 		#render the solid color (black) background to prepare the screen for a fresh game render
 		screen.fill((0,0,0))
 		#render objects
-		screen.blit(btn.surf, btn.rect)
+		screen.blit(btn.image, btn.rect)
 		#push final screen render to the display	 
 		pygame.display.flip()
 	
