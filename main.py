@@ -9,12 +9,16 @@ class GM(object):
 	#init game vars
 	@staticmethod
 	def init(screenWidthIn, screenHeightIn):
+		#store directories
+		GM.rootDir = os.path.split(os.path.abspath(sys.argv[0]))[0]
+		
 		#init screen width and height (in pixels)
 		GM.screenWidth = screenWidthIn
 		GM.screenHeight = screenHeightIn
 		
 		#init fonts (each text size should have its own font)
-		GM.fontSmall = pygame.font.Font(None, 24)
+		GM.fontDir = os.path.join(GM.rootDir,"fonts")
+		GM.fontSmall = pygame.font.Font(os.path.join(GM.fontDir,"freesansbold.ttf"), 18)
 		
 		#init game-related variables
 		GM.running = True
@@ -29,9 +33,6 @@ class GM(object):
 		#store object collections
 		GM.objects = pygame.sprite.LayeredUpdates() 
 		GM.roomsLayer = Layer(0,0,150,900)
-		
-		#store directories
-		GM.rootDir = os.path.split(os.path.abspath(sys.argv[0]))[0]
 		
 		#init screen and window caption
 		GM.screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
