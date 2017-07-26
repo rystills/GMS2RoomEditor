@@ -27,7 +27,8 @@ class GM(object):
 		GM.mouseReleasedLeft = False
 		
 		#store object collections
-		GM.UI = pygame.sprite.LayeredUpdates() 
+		GM.objects = pygame.sprite.LayeredUpdates() 
+		GM.roomsLayer = Layer(0,0,150,900)
 		
 		#store directories
 		GM.rootDir = os.path.split(os.path.abspath(sys.argv[0]))[0]
@@ -57,12 +58,26 @@ class GM(object):
 			if (event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)):
 				GM.running = False
 				return True
+		
+	#render all objects to the screen	
+	@staticmethod
+	def render():
+		#render the solid color (black) background to prepare the screen for a fresh game render
+		GM.screen.fill((0,0,0))
+		#render layers
+		GM.roomsLayer.render()
+		GM.screen.blit(GM.roomsLayer.image,GM.roomsLayer.rect)
+		#render objects
+		GM.objects.draw(GM.screen)
+		#push final screen render to the display	 
+		pygame.display.flip()
 	
 	#update all objects
 	@staticmethod
 	def updateObjects():
-		for i in GM.UI:
+		for i in GM.objects:
 			i.update()
+		GM.roomsLayer.update()
 	
 	#update game
 	@staticmethod
@@ -96,7 +111,7 @@ class GM(object):
 	#delete all UI objects
 	@staticmethod
 	def clearUI():
-		for i in GM.UI:
+		for i in GM.objects:
 			i.kill()
 			
 	#update the display and width,height vars to the specified dimensions
@@ -105,6 +120,29 @@ class GM(object):
 		pygame.display.set_mode((width,height))
 		GM.screenWidth = width
 		GM.screenHeight = height
+		
+#simple class that stores and renders a group of objects
+class Layer(pygame.sprite.Sprite):
+	def __init__(self,x,y,width,height):
+		self.image = pygame.surface.Surface((width,height))
+		self.rect = self.image.get_rect()
+		self.rect.topleft = (x,y)
+		self.containedObjects = pygame.sprite.LayeredUpdates()
+	
+	#add the input object to this layer
+	def add(self,obj):
+		self.containedObjects.add(obj)
+	
+	#render all contained objects to our surface
+	def render(self):
+		self.image.fill((0,0,0))
+		for i in self.containedObjects:
+			self.image.blit(i.image,i.rect)
+			
+	#update all contained objects
+	def update(self):
+		for i in self.containedObjects:
+			i.update()
 		
 #simple mouse-based button class
 class Button(pygame.sprite.Sprite):
@@ -197,19 +235,21 @@ def openLastProject():
 def openProject(projFile):
 	#init projet directories
 	GM.projDir = projFile[:projFile.rfind(os.path.sep)]
+	print("opening project: " + GM.projDir)
 	GM.sprDir = os.path.join(GM.projDir,"sprites")
 	GM.objDir = os.path.join(GM.projDir,"objects")
 	GM.rmDir = os.path.join(GM.projDir,"rooms")
 	GM.clearUI()
-	GM.updateScreenDimensions(1366,768)
+	GM.updateScreenDimensions(1600,900)
 	#create a button for each room
 	rmList = (next(os.walk(GM.rmDir))[1])
 	for i in range(len(rmList)):
-		GM.UI.add(Button(rmList[i],GM.fontSmall,30,30 + 50*i,openRoom,[rmList[i]],"left"))
+		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,30,30 + 50*i,openRoom,[rmList[i]],"left"))
 	
 #open the specified room
 def openRoom(rm):
-	print(rm)
+	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
+	#with open()
 	
 
 #main function: init game, then run the core game loop
@@ -220,21 +260,16 @@ def main():
 	GM.init(240,120)
 	
 	#create load project button
-	GM.UI.add(Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))
+	GM.objects.add(Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))
 	#create open last project button
-	GM.UI.add(Button("Open Last Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 + 20, openLastProject))
+	GM.objects.add(Button("Open Last Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 + 20, openLastProject))
 	
 	#Main Loop; runs until game is exited
 	while GM.running:
 		#update the game, exiting immediately if the user quit
 		if (GM.tick()):
 			break		
-		#render the solid color (black) background to prepare the screen for a fresh game render
-		GM.screen.fill((0,0,0))
-		#render objects
-		GM.UI.draw(GM.screen)
-		#push final screen render to the display	 
-		pygame.display.flip()
+		GM.render()
 	
 #this calls the 'main' function when this script is executed directly
 if __name__ == "__main__":
