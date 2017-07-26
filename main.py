@@ -135,6 +135,7 @@ class Layer(pygame.sprite.Sprite):
 		self.scrollBarDragging = False
 		self.scrollBarRect = None
 		self.dragStartPos = (0,0)
+		self.scrollbarColor = pygame.Color(200,200,200,255)
 	
 	#add the input object to this layer
 	def add(self,obj):
@@ -174,7 +175,7 @@ class Layer(pygame.sprite.Sprite):
 		
 		#draw the scrollbar, if it exists
 		if (self.scrollHeightDiff > 0):
-			pygame.draw.rect(self.image,(255,255,255),self.scrollBarRect)
+			pygame.draw.rect(self.image,self.scrollbarColor,self.scrollBarRect)
 			
 	#update this layer's scrollbar and modify scroll values accordingly
 	def updateScrollbar(self):
@@ -184,7 +185,9 @@ class Layer(pygame.sprite.Sprite):
 				(self.image.get_height() - self.scrollbarHeight) * self.scrollY,20,self.scrollbarHeight)
 			
 			#move scrollbar when dragged
+			hovering = False
 			if (self.scrollBarRect.collidepoint(pygame.mouse.get_pos())):
+				hovering = True
 				#if mouse button was just pressed on the scrollbar, toggle pressed on
 				if (GM.mousePressedLeft): 
 					self.scrollBarDragging = True
@@ -205,6 +208,16 @@ class Layer(pygame.sprite.Sprite):
 			#release scrollbar when no longer dragging
 			else:
 				self.scrollBarDragging = False
+				
+			#color blend scrollbar based off of state
+			white = 200
+			if (self.scrollBarDragging):
+				white = 145
+			elif (hovering):
+				white = 255	
+			#update our draw surface if our color changed
+			if (white != self.scrollbarColor.r):
+				self.scrollbarColor = pygame.Color(white,white,white,255)
 			
 	#update all contained objects
 	def update(self):
@@ -232,14 +245,14 @@ class Button(pygame.sprite.Sprite):
 		self.args = args
 		self.align = align
 		self.color = pygame.Color(200,200,200,255)
-		self.updateImage();
+		self.updateImage()
 		self.pressed = False
 		self.layer = None
 		
 	#update our drawSurface (only needs to happen when our color or text is altered)
 	def updateImage(self):
 		self.image = self.font.render(self.text, True, self.color)
-		self.rect = self.image.get_rect();
+		self.rect = self.image.get_rect()
 		if (self.align == "center"):
 			self.rect.center = (self.x,self.y)
 		else:
@@ -268,13 +281,11 @@ class Button(pygame.sprite.Sprite):
 			self.pressed = False
 		
 		#color blend based off of state
-		white = 200;
+		white = 200
 		if (self.state == "press"):
 			white = 145
-		
 		elif (self.state == "hover"):
 			white = 255
-			
 		#update our draw surface if our color changed
 		if (white != self.color.r):
 			self.color = pygame.Color(white,white,white,255)
