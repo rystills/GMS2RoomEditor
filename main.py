@@ -56,10 +56,39 @@ def openProject(projFile):
 def openRoom(rm):
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
 	#with open()
+
+#get all contents of the specified file, stripped of newlines, and return it as a strong
+def getFileContents(fName):
+	fileString = ""
+	with open(fName, "rt") as f:
+		for line in f:
+			fileString += line.strip()
+	return fileString
+
+#get a specific value from a parsed file string
+def getFileVal(fStr, val):
+	#first get start index
+	startInd = fStr.find(val)
+	#next get index of first : after that
+	colInd = fStr.find(":",startInd)
+	#finally, get the index of the next comma
+	commaInd = fStr.find(",",colInd)
+	#if there was no next comma, this index should be set to the end of the string
+	if (commaInd == -1):
+		commaInd = len(fStr)-1
+		
+	#now get the string from 1 past the colon, up to but not including the next comma or end of file
+	newStr = fStr[colInd+1:commaInd]
 	
+	#finally, strip off whitespace, commas, and double quotation marks
+	return newStr.strip().strip(",").strip('"')
+
 #select the specified object
 def selectObject(obj):
-	print("opening object: " + os.path.join(os.path.join(GM.objDir,obj),obj + ".yy"))
+	objFile = os.path.join(os.path.join(GM.objDir,obj),obj + ".yy")
+	print("opening object: " + objFile)
+	fStr = getFileContents(objFile)
+	print("sprite id: " + getFileVal(fStr,"spriteId"))
 
 #main function: init game, then run the core game loop
 def main():
