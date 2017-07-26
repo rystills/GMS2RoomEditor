@@ -130,8 +130,11 @@ class Layer(pygame.sprite.Sprite):
 		self.containedObjects = pygame.sprite.LayeredUpdates()
 		#scroll x and y values, measured as a fraction of the scroll height difference
 		self.scrollX = 0
-		self.scrollY = .5
+		self.scrollY = 0
 		self.scrollHeightDiff = 0
+		self.scrollBarDragging = False
+		self.scrollBarRect = None
+		self.dragStartPos = (0,0)
 	
 	#add the input object to this layer
 	def add(self,obj):
@@ -171,13 +174,39 @@ class Layer(pygame.sprite.Sprite):
 		
 		#draw the scrollbar, if it exists
 		if (self.scrollHeightDiff > 0):
-			pygame.draw.rect(self.image,(255,255,255),pygame.rect.Rect(self.image.get_width()-20,
-				(self.image.get_height() - self.scrollbarHeight) * self.scrollY,20,self.scrollbarHeight))
+			pygame.draw.rect(self.image,(255,255,255),self.scrollBarRect)
 			
 	#update all contained objects
 	def update(self):
 		for i in self.containedObjects:
 			i.update()
+		#update scrollbar if it exists
+		if (self.scrollHeightDiff > 0):
+			self.scrollBarRect = pygame.rect.Rect(self.image.get_width()-20,
+				(self.image.get_height() - self.scrollbarHeight) * self.scrollY,20,self.scrollbarHeight)
+			
+			#move scrollbar when dragged
+			if (self.scrollBarRect.collidepoint(pygame.mouse.get_pos())):
+				#if mouse button was just pressed on the scrollbar, toggle pressed on
+				if (GM.mousePressedLeft): 
+					self.scrollBarDragging = True
+					self.dragStartPos = pygame.mouse.get_pos()
+			
+			#if mouse is held on the scrollbar, drag it vertically 
+			if (GM.mouseDownLeft):
+				if (self.scrollBarDragging):
+					#scroll as a percentage of the total scroll distance
+					self.scrollY -= (self.dragStartPos[1] - pygame.mouse.get_pos()[1]) / (self.image.get_height() - self.scrollbarHeight)
+					#keep scroll value bounded
+					if self.scrollY < 0:
+						self.scrollY = 0
+					if self.scrollY > 1:
+						self.scrollY = 1
+					#update relative drag pos to current mouse pos
+					self.dragStartPos = pygame.mouse.get_pos()
+			#release scrollbar when no longer dragging
+			else:
+				self.scrollBarDragging = False
 		
 #simple mouse-based button class
 class Button(pygame.sprite.Sprite):
