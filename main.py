@@ -33,6 +33,7 @@ class GM(object):
 		#store object collections
 		GM.objects = pygame.sprite.LayeredUpdates() 
 		GM.roomsLayer = Layer(0,0,150,900)
+		GM.objectsLayer = Layer(1450,0,150,900)
 		
 		#init screen and window caption
 		GM.screen = pygame.display.set_mode([GM.screenWidth, GM.screenHeight])
@@ -68,6 +69,8 @@ class GM(object):
 		#render layers
 		GM.roomsLayer.render()
 		GM.screen.blit(GM.roomsLayer.image,GM.roomsLayer.rect)
+		GM.objectsLayer.render()
+		GM.screen.blit(GM.objectsLayer.image,GM.objectsLayer.rect)
 		#render objects
 		GM.objects.draw(GM.screen)
 		#push final screen render to the display	 
@@ -79,6 +82,7 @@ class GM(object):
 		for i in GM.objects:
 			i.update()
 		GM.roomsLayer.update()
+		GM.objectsLayer.update()
 	
 	#update game
 	@staticmethod
@@ -223,10 +227,12 @@ class Layer(pygame.sprite.Sprite):
 	#update all contained objects
 	def update(self):
 		for i in self.containedObjects:
-			#move object rect to its scroll adjusted position before updating
+			#move object rect to its scroll and layer pos adjusted position before updating
 			oldCenter = i.rect.center
 			i.rect.centery -= self.topY
 			i.rect.centery -= (self.scrollY * self.scrollHeightDiff)
+			i.rect.top += self.rect.top
+			i.rect.left += self.rect.left
 			i.update()
 			#move object rect back to its absolute position after updating
 			i.rect.center = oldCenter
@@ -332,12 +338,20 @@ def openProject(projFile):
 	rmList = (next(os.walk(GM.rmDir))[1])
 	for i in range(len(rmList)):
 		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,30,30 + 50*i,openRoom,[rmList[i]],"left"))
+		
+	#create a button for each object
+	objList = (next(os.walk(GM.objDir))[1])
+	for i in range(len(objList)):
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,30,30 + 50*i,selectObject,[objList[i]],"left"))
 	
 #open the specified room
 def openRoom(rm):
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
 	#with open()
 	
+#select the specified object
+def selectObject(obj):
+	print("opening object: " + os.path.join(os.path.join(GM.objDir,obj),obj + ".yy"))
 
 #main function: init game, then run the core game loop
 def main():
