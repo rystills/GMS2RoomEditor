@@ -130,42 +130,49 @@ class Layer(pygame.sprite.Sprite):
 		self.containedObjects = pygame.sprite.LayeredUpdates()
 		#scroll x and y values, measured as a fraction of the scroll height difference
 		self.scrollX = 0
-		self.scrollY = 0
+		self.scrollY = .5
 		self.scrollHeightDiff = 0
 	
 	#add the input object to this layer
 	def add(self,obj):
 		self.containedObjects.add(obj)
+		obj.layer = self
 		self.resizeScrollbar()
 		
 	#adjust this layer's scrollbar so that its size and scroll bounds match the extents of the contained objects
 	def resizeScrollbar(self):
 		#first find the highest and lowest objects
-		topY = bottomY = ""
+		self.topY = self.bottomY = None
 		for i in self.containedObjects:
-			if (topY == "" or i.rect.top < topY):
-				topY = i.rect.top
-			if (bottomY == "" or i.rect.bottom > bottomY):
-				bottomY = i.rect.bottom
+			if (self.topY == None or i.rect.top < self.topY):
+				self.topY = i.rect.top
+			if (self.bottomY == None or i.rect.bottom > self.bottomY):
+				self.bottomY = i.rect.bottom
 		
 		#now determine the difference between the top y and bottom y and this layer's height
-		self.scrollHeightDiff = (bottomY - topY) - self.image.get_height()
+		self.scrollHeightDiff = (self.bottomY - self.topY) - self.image.get_height()
 		if (self.scrollHeightDiff > 0):
 			#set scrollbar height to the proportion of the view to the range of content
-			self.scrollbarHeight = self.image.get_height() * (self.image.get_height() / (bottomY - topY))
+			self.scrollbarHeight = self.image.get_height() * (self.image.get_height() / (self.bottomY - self.topY))
 	
 	#render all contained objects to our surface
 	def render(self):
 		#clear view area to black
 		self.image.fill((0,0,0))
 		#draw all objects
+		scrollDistance = self.scrollY * self.scrollHeightDiff
 		for i in self.containedObjects:
+			#move rect based on scroll value
+			oldCentery = i.rect.centery
+			i.rect.centery -= self.topY
+			i.rect.centery -= scrollDistance
 			self.image.blit(i.image,i.rect)
+			i.rect.centery = oldCentery
 		
 		#draw the scrollbar, if it exists
 		if (self.scrollHeightDiff > 0):
 			pygame.draw.rect(self.image,(255,255,255),pygame.rect.Rect(self.image.get_width()-20,
-				(self.image.get_height() - self.scrollbarHeight/2) * self.scrollY,20,self.scrollbarHeight))
+				(self.image.get_height() - self.scrollbarHeight) * self.scrollY,20,self.scrollbarHeight))
 			
 	#update all contained objects
 	def update(self):
@@ -188,6 +195,7 @@ class Button(pygame.sprite.Sprite):
 		self.color = pygame.Color(200,200,200,255)
 		self.updateImage();
 		self.pressed = False
+		self.layer = None
 		
 	#update our drawSurface (only needs to happen when our color or text is altered)
 	def updateImage(self):
@@ -197,13 +205,24 @@ class Button(pygame.sprite.Sprite):
 			self.rect.center = (self.x,self.y)
 		else:
 			self.rect.topleft = (self.x,self.y)
+			
+	#check if our scroll adjusted rect is intersected by the input point
+	def pointCol(self,pos):
+		if (self.layer != None):
+			oldCenter = self.rect.center
+			self.rect.centery -= self.layer.topY
+			self.rect.centery -= (self.layer.scrollY * self.layer.scrollHeightDiff)
+			isCol = self.rect.collidepoint(pos)
+			self.rect.center = oldCenter
+			return isCol
+		return self.rect.collidepoint(pos)
 	
 	#update button state based on mouse interaction
 	def update(self):
 		#check mouse button status
 		#check if mouse is on this button 
 		self.state = "neutral"
-		if (self.rect.collidepoint(pygame.mouse.get_pos())):
+		if (self.pointCol(pygame.mouse.get_pos())):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
 				self.pressed = True
