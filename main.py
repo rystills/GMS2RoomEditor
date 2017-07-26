@@ -176,10 +176,8 @@ class Layer(pygame.sprite.Sprite):
 		if (self.scrollHeightDiff > 0):
 			pygame.draw.rect(self.image,(255,255,255),self.scrollBarRect)
 			
-	#update all contained objects
-	def update(self):
-		for i in self.containedObjects:
-			i.update()
+	#update this layer's scrollbar and modify scroll values accordingly
+	def updateScrollbar(self):
 		#update scrollbar if it exists
 		if (self.scrollHeightDiff > 0):
 			self.scrollBarRect = pygame.rect.Rect(self.image.get_width()-20,
@@ -207,6 +205,18 @@ class Layer(pygame.sprite.Sprite):
 			#release scrollbar when no longer dragging
 			else:
 				self.scrollBarDragging = False
+			
+	#update all contained objects
+	def update(self):
+		for i in self.containedObjects:
+			#move object rect to its scroll adjusted position before updating
+			oldCenter = i.rect.center
+			i.rect.centery -= self.topY
+			i.rect.centery -= (self.scrollY * self.scrollHeightDiff)
+			i.update()
+			#move object rect back to its absolute position after updating
+			i.rect.center = oldCenter
+		self.updateScrollbar()
 		
 #simple mouse-based button class
 class Button(pygame.sprite.Sprite):
@@ -234,24 +244,13 @@ class Button(pygame.sprite.Sprite):
 			self.rect.center = (self.x,self.y)
 		else:
 			self.rect.topleft = (self.x,self.y)
-			
-	#check if our scroll adjusted rect is intersected by the input point
-	def pointCol(self,pos):
-		if (self.layer != None):
-			oldCenter = self.rect.center
-			self.rect.centery -= self.layer.topY
-			self.rect.centery -= (self.layer.scrollY * self.layer.scrollHeightDiff)
-			isCol = self.rect.collidepoint(pos)
-			self.rect.center = oldCenter
-			return isCol
-		return self.rect.collidepoint(pos)
 	
 	#update button state based on mouse interaction
 	def update(self):
 		#check mouse button status
 		#check if mouse is on this button 
 		self.state = "neutral"
-		if (self.pointCol(pygame.mouse.get_pos())):
+		if (self.rect.collidepoint(pygame.mouse.get_pos())):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
 				self.pressed = True
