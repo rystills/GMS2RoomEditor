@@ -12,10 +12,12 @@ class Layer(pygame.sprite.Sprite):
 		self.image = pygame.surface.Surface((width,height))
 		self.rect = self.image.get_rect()
 		self.rect.topleft = (x,y)
-		self.containedObjects = pygame.sprite.LayeredUpdates()
-		#scroll x and y values, measured as a fraction of the scroll height difference
+		self.containedObjects = pygame.sprite.LayeredUpdates()		
+		#scrollbar related vars
+		#scroll x and y values, measured as a fraction of the scroll height difference (between 0 and 1)
 		self.scrollX = 0
 		self.scrollY = 0
+		#scrollHeightDiff stores the total size in pixels between our total height and surface height
 		self.scrollHeightDiff = 0
 		self.scrollBarDragging = False
 		self.scrollBarRect = None
@@ -85,10 +87,7 @@ class Layer(pygame.sprite.Sprite):
 					#scroll as a percentage of the total scroll distance
 					self.scrollY -= (self.dragStartPos[1] - pygame.mouse.get_pos()[1]) / (self.image.get_height() - self.scrollbarHeight)
 					#keep scroll value bounded
-					if self.scrollY < 0:
-						self.scrollY = 0
-					if self.scrollY > 1:
-						self.scrollY = 1
+					self.scrollY = max(0,min(self.scrollY,1))
 					#update relative drag pos to current mouse pos
 					self.dragStartPos = pygame.mouse.get_pos()
 			#release scrollbar when no longer dragging

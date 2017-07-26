@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, RLEACCEL
 from layer import Layer
 import sys, os
+#set 'this' to point to this module, so we can maintain module-wide globals
 this = sys.modules[__name__]
 
 #GameManager module; houses most game related variables and methods
@@ -11,6 +12,9 @@ def init(screenWidthIn, screenHeightIn):
 	#init screen width and height (in pixels)
 	this.screenWidth = screenWidthIn
 	this.screenHeight = screenHeightIn
+	
+	#set window position before pygame init
+	os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (160,90)
 	
 	#init fonts (each text size should have its own font)
 	this.fontDir = os.path.join(this.rootDir,"fonts")
