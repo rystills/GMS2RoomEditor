@@ -128,7 +128,7 @@ class Layer(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.topleft = (x,y)
 		self.containedObjects = pygame.sprite.LayeredUpdates()
-		#scroll x and y values, measured as a percent of the scroll height difference
+		#scroll x and y values, measured as a fraction of the scroll height difference
 		self.scrollX = 0
 		self.scrollY = 0
 		self.scrollHeightDiff = 0
@@ -152,7 +152,7 @@ class Layer(pygame.sprite.Sprite):
 		self.scrollHeightDiff = (bottomY - topY) - self.image.get_height()
 		if (self.scrollHeightDiff > 0):
 			#set scrollbar height to the proportion of the view to the range of content
-			self.scrollbarHeight = self.image.get_height() / (bottomY - topY)
+			self.scrollbarHeight = self.image.get_height() * (self.image.get_height() / (bottomY - topY))
 	
 	#render all contained objects to our surface
 	def render(self):
@@ -164,7 +164,8 @@ class Layer(pygame.sprite.Sprite):
 		
 		#draw the scrollbar, if it exists
 		if (self.scrollHeightDiff > 0):
-			pass
+			pygame.draw.rect(self.image,(255,255,255),pygame.rect.Rect(self.image.get_width()-20,
+				(self.image.get_height() - self.scrollbarHeight/2) * self.scrollY,20,self.scrollbarHeight))
 			
 	#update all contained objects
 	def update(self):
