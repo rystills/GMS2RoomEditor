@@ -8,7 +8,7 @@ import GM
 #simple mouse-based button class
 class Button(pygame.sprite.Sprite):
 	#button init; store this button's properties and prepare its surface
-	def __init__(self,text,font,x,y,function,args=[],align="center"):
+	def __init__(self,text,font,x,y,function,args=[],align="center",sprite=None):
 		#Call the parent class (Sprite) constructor
 		pygame.sprite.Sprite.__init__(self)
 		self.text = text
@@ -22,6 +22,7 @@ class Button(pygame.sprite.Sprite):
 		self.updateImage()
 		self.pressed = False
 		self.layer = None
+		self.sprite = sprite
 		
 	#update our drawSurface (only needs to happen when our color or text is altered)
 	def updateImage(self):

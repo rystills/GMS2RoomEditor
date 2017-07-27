@@ -50,7 +50,7 @@ def openProject(projFile):
 	#create a button for each object
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
-		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left"))
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left")),loadObjectSprite(objList[i])
 		
 	#show rooms and objects layers
 	GM.roomsLayer.visible = True
@@ -92,6 +92,7 @@ def findSpriteImageById(imgId):
 	sprList = (next(os.walk(GM.sprDir))[1])
 	for i in range(len(sprList)):
 		spr = sprList[i]
+		#store the first file in the directory with extension '.png'
 		fName = next(file for file in os.listdir(os.path.join(GM.sprDir,spr)) if file.endswith(".png"))
 		if (fName[:-4] == imgId):
 			return fName
@@ -103,6 +104,7 @@ def findSpriteById(sprId):
 		spr = sprList[i]
 		sprFile = os.path.join(os.path.join(GM.sprDir,spr),spr + ".yy")
 		print("opening sprite: " + sprFile)
+		#check if this sprite's id matches the desired sprite id
 		fStr = getFileContents(sprFile)
 		imgId = getFileVal(fStr,"id")
 		if (imgId == sprId):
@@ -115,6 +117,10 @@ def getSpriteImage(sprName):
 
 #select the specified object
 def selectObject(obj):
+	print("selected object: " + obj)
+
+#load the sprite corresponding to the passed in obj name
+def loadObjectSprite(obj):
 	#read the object file to get its sprite id
 	objFile = os.path.join(os.path.join(GM.objDir,obj),obj + ".yy")
 	print("opening object: " + objFile)
@@ -126,7 +132,7 @@ def selectObject(obj):
 	#check the directory of the found sprite for its image
 	sprImgPath = os.path.join(os.path.join(GM.sprDir,sprName),getSpriteImage(sprName))
 	#load the found image
-	GM.loadImage(sprImgPath)
+	return GM.loadImage(sprImgPath)
 
 #main function: init game, then run the core game loop
 def main():
