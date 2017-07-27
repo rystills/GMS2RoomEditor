@@ -51,6 +51,10 @@ def openProject(projFile):
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
 		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left"))
+		
+	#show rooms and objects layers
+	GM.roomsLayer.visible = True
+	GM.objectsLayer.visible = True
 	
 #open the specified room
 def openRoom(rm):
@@ -96,6 +100,8 @@ def main():
 	pygame.init()
 	#call GameManager setup
 	GM.init(240,120)
+	GM.roomsLayer.visible = False
+	GM.objectsLayer.visible = False
 	
 	#create load project button
 	GM.objects.add(Button("Load Project",GM.fontMedium, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))

@@ -25,9 +25,10 @@ class Layer(pygame.sprite.Sprite):
 		self.scrollbarColor = pygame.Color(200,200,200,255)
 		self.scrollbarPos = scrollbarPos
 		self.title = title
-		self.titleOffset = 30 if len(self.title) > 0 else 0
+		self.titleOffset =20 if len(self.title) > 0 else 0
 		#effective height of the viewable area, after we subtract the title offset (if any)
 		self.viewHeight = self.image.get_height() - self.titleOffset
+		self.visible = True
 	
 	#add the input object to this layer
 	def add(self,obj):
@@ -53,8 +54,10 @@ class Layer(pygame.sprite.Sprite):
 	
 	#render all contained objects to our surface
 	def render(self):
+		if (not self.visible):
+			return
 		#clear view area to black
-		self.image.fill((0,0,0))
+		self.image.fill((0,0,50))
 		
 		#draw all objects
 		scrollDistance = self.scrollY * self.scrollHeightDiff
@@ -70,7 +73,7 @@ class Layer(pygame.sprite.Sprite):
 		#draw title, if not blank
 		if (len(self.title) > 0):
 			#start by clearing space behind title
-			self.image.fill((0,0,0),pygame.rect.Rect(0,0,self.rect.width,self.titleOffset))
+			self.image.fill((0,0,100),pygame.rect.Rect(0,0,self.rect.width,self.titleOffset))
 			self.image.blit(GM.fontSmall.render(self.title,True,pygame.Color(255,255,255)),(2,0))
 		
 		#draw the scrollbar, if it exists
@@ -118,6 +121,8 @@ class Layer(pygame.sprite.Sprite):
 			
 	#update all contained objects
 	def update(self):
+		if (not self.visible):
+			return
 		for i in self.containedObjects:
 			#move object rect to its scroll and layer pos adjusted position before updating
 			oldCenter = i.rect.center

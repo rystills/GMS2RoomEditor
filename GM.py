@@ -35,7 +35,7 @@ def init(screenWidthIn, screenHeightIn):
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
 	this.roomsLayer = Layer(0,0,100,900,"Select Room")
-	this.objectsLayer = Layer(1500,0,100,900,"Select Object", "left")
+	this.objectsLayer = Layer(1500,0,100,900,"Select Object")
 	
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])
