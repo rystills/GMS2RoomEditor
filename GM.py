@@ -18,7 +18,9 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#init fonts (each text size should have its own font)
 	this.fontDir = os.path.join(this.rootDir,"fonts")
-	this.fontSmall = pygame.font.Font(os.path.join(this.fontDir,"freesansbold.ttf"), 18)
+	this.fontSmall = pygame.font.Font(os.path.join(this.fontDir,"freesansbold.ttf"), 12)
+	this.fontMedium = pygame.font.Font(os.path.join(this.fontDir,"freesansbold.ttf"), 24)
+	this.fontLarge = pygame.font.Font(os.path.join(this.fontDir,"freesansbold.ttf"), 48)
 	
 	#init game-related variables
 	this.running = True
@@ -32,8 +34,8 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
-	this.roomsLayer = Layer(0,0,150,900)
-	this.objectsLayer = Layer(1450,0,150,900,"left")
+	this.roomsLayer = Layer(0,0,100,900,"Select Room")
+	this.objectsLayer = Layer(1500,0,100,900,"Select Object", "left")
 	
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])

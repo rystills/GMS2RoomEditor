@@ -8,7 +8,7 @@ import GM
 
 #simple class that stores and renders a group of objects
 class Layer(pygame.sprite.Sprite):
-	def __init__(self,x,y,width,height,scrollbarPos = "right"):
+	def __init__(self,x,y,width,height,title="",scrollbarPos = "right"):
 		self.image = pygame.surface.Surface((width,height))
 		self.rect = self.image.get_rect()
 		self.rect.topleft = (x,y)
@@ -24,6 +24,10 @@ class Layer(pygame.sprite.Sprite):
 		self.dragStartPos = (0,0)
 		self.scrollbarColor = pygame.Color(200,200,200,255)
 		self.scrollbarPos = scrollbarPos
+		self.title = title
+		self.titleOffset = 30 if len(self.title) > 0 else 0
+		#effective height of the viewable area, after we subtract the title offset (if any)
+		self.viewHeight = self.image.get_height() - self.titleOffset
 	
 	#add the input object to this layer
 	def add(self,obj):
@@ -42,15 +46,16 @@ class Layer(pygame.sprite.Sprite):
 				self.bottomY = i.rect.bottom
 		
 		#now determine the difference between the top y and bottom y and this layer's height
-		self.scrollHeightDiff = (self.bottomY - self.topY) - self.image.get_height()
+		self.scrollHeightDiff = (self.bottomY - self.topY) - self.viewHeight
 		if (self.scrollHeightDiff > 0):
 			#set scrollbar height to the proportion of the view to the range of content
-			self.scrollbarHeight = self.image.get_height() * (self.image.get_height() / (self.bottomY - self.topY))
+			self.scrollbarHeight = self.viewHeight * (self.viewHeight / (self.bottomY - self.topY))
 	
 	#render all contained objects to our surface
 	def render(self):
 		#clear view area to black
 		self.image.fill((0,0,0))
+		
 		#draw all objects
 		scrollDistance = self.scrollY * self.scrollHeightDiff
 		for i in self.containedObjects:
@@ -58,8 +63,15 @@ class Layer(pygame.sprite.Sprite):
 			oldCentery = i.rect.centery
 			i.rect.centery -= self.topY
 			i.rect.centery -= scrollDistance
+			i.rect.centery += self.titleOffset
 			self.image.blit(i.image,i.rect)
 			i.rect.centery = oldCentery
+			
+		#draw title, if not blank
+		if (len(self.title) > 0):
+			#start by clearing space behind title
+			self.image.fill((0,0,0),pygame.rect.Rect(0,0,self.rect.width,self.titleOffset))
+			self.image.blit(GM.fontSmall.render(self.title,True,pygame.Color(255,255,255)),(2,0))
 		
 		#draw the scrollbar, if it exists
 		if (self.scrollHeightDiff > 0):
@@ -70,7 +82,7 @@ class Layer(pygame.sprite.Sprite):
 		#update scrollbar if it exists
 		if (self.scrollHeightDiff > 0):
 			self.scrollBarRect = pygame.rect.Rect(self.image.get_width()-20 if self.scrollbarPos == "right" else 0,
-				(self.image.get_height() - self.scrollbarHeight) * self.scrollY,20,self.scrollbarHeight)
+				(self.viewHeight - self.scrollbarHeight) * self.scrollY + self.titleOffset,20,self.scrollbarHeight)
 			
 			#move scrollbar when dragged
 			hovering = False
@@ -85,7 +97,7 @@ class Layer(pygame.sprite.Sprite):
 			if (GM.mouseDownLeft):
 				if (self.scrollBarDragging):
 					#scroll as a percentage of the total scroll distance
-					self.scrollY -= (self.dragStartPos[1] - pygame.mouse.get_pos()[1]) / (self.image.get_height() - self.scrollbarHeight)
+					self.scrollY -= (self.dragStartPos[1] - pygame.mouse.get_pos()[1]) / (self.viewHeight - self.scrollbarHeight)
 					#keep scroll value bounded
 					self.scrollY = max(0,min(self.scrollY,1))
 					#update relative drag pos to current mouse pos
@@ -111,6 +123,7 @@ class Layer(pygame.sprite.Sprite):
 			oldCenter = i.rect.center
 			i.rect.centery -= self.topY
 			i.rect.centery -= (self.scrollY * self.scrollHeightDiff)
+			i.rect.centery += self.titleOffset
 			i.rect.top += self.rect.top
 			i.rect.left += self.rect.left
 			i.update()

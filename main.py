@@ -45,12 +45,12 @@ def openProject(projFile):
 	#create a button for each room
 	rmList = (next(os.walk(GM.rmDir))[1])
 	for i in range(len(rmList)):
-		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,30,30 + 50*i,openRoom,[rmList[i]],"left"))
+		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,2,45*i,openRoom,[rmList[i]],"left"))
 		
 	#create a button for each object
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
-		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,30,30 + 50*i,selectObject,[objList[i]],"left"))
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left"))
 	
 #open the specified room
 def openRoom(rm):
@@ -98,9 +98,9 @@ def main():
 	GM.init(240,120)
 	
 	#create load project button
-	GM.objects.add(Button("Load Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))
+	GM.objects.add(Button("Load Project",GM.fontMedium, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))
 	#create open last project button
-	GM.objects.add(Button("Open Last Project",GM.fontSmall, GM.screenWidth/2, GM.screenHeight/2 + 20, openLastProject))
+	GM.objects.add(Button("Open Last Project",GM.fontMedium, GM.screenWidth/2, GM.screenHeight/2 + 20, openLastProject))
 	
 	#Main Loop; runs until game is exited
 	while GM.running:
