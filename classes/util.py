@@ -1,3 +1,5 @@
+import pygame
+from pygame.locals import RLEACCEL
 import os
 import GM
 
@@ -55,6 +57,30 @@ def findSpriteById(sprId):
 def getSpriteImage(sprName):
 	return next(file for file in os.listdir(os.path.join(GM.sprDir,sprName)) if file.endswith(".png"))
 
+#determine whether or not a png file has an alpha channel by checking the correct byte
+def pngHasAlpha(imgPath):
+	with open(imgPath, "rb") as file:
+		file.read(25)
+		return file.read(1) == b'\x06'
+	return False
+	
+#load an image, optionally setting a colorkey - adapted from the pygame chimp example
+def loadImage(imageName, convertAlpha=False, colorkey=None): 
+	fullname = os.path.join(imageName)
+	try:
+		image = pygame.image.load(fullname)
+	except:
+		print('Cannot load image:', fullname)
+		raise SystemExit
+
+	#convert_alpha should be used only for images with per-pixel alpha transparency
+	image = image.convert() if not convertAlpha else image.convert_alpha()
+	if colorkey is not None:
+		if colorkey is -1:
+			colorkey = image.get_at((0,0))
+		image.set_colorkey(colorkey, RLEACCEL)
+	return image
+
 #load the sprite corresponding to the passed in obj name
 def loadObjectSprite(obj):
 	#read the object file to get its sprite id
@@ -71,4 +97,4 @@ def loadObjectSprite(obj):
 	#check the directory of the found sprite for its image
 	sprImgPath = os.path.join(os.path.join(GM.sprDir,sprName),getSpriteImage(sprName))
 	#load the found image
-	return GM.loadImage(sprImgPath)
+	return loadImage(sprImgPath, pngHasAlpha(sprImgPath))

@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, RLEACCEL
+from pygame.locals import KEYDOWN, QUIT, K_ESCAPE
 from layer import Layer
 import sys
 from util import *
@@ -49,7 +49,7 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#load image for objects with no sprite
 	this.noSpriteImg = loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
-
+	
 #update mouse click and press variables
 def updateMouseVars():
 	#left mouse button down
@@ -107,23 +107,6 @@ def tick():
 		return True
 	this.updateMouseVars()
 	this.updateObjects()
-	
-#load an image, optionally setting a colorkey - adapted from the pygame chimp example
-def loadImage(imageName, convertAlpha=False, colorkey=None): 
-	fullname = os.path.join(imageName)
-	try:
-		image = pygame.image.load(fullname)
-	except:
-		print('Cannot load image:', fullname)
-		raise SystemExit
-
-	#convert_alpha should be used only for images with per-pixel alpha transparency
-	image = image.convert() if not convertAlpha else image.convert_alpha()
-	if colorkey is not None:
-		if colorkey is -1:
-			colorkey = image.get_at((0,0))
-		image.set_colorkey(colorkey, RLEACCEL)
-	return image
 
 #delete all UI objects
 def clearUI():
