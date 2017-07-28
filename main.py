@@ -50,7 +50,7 @@ def openProject(projFile):
 	#create a button for each object
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
-		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left",loadObjectSprite(objList[i])))
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,90*i,selectObject,[objList[i]],"left",loadObjectSprite(objList[i])))
 		
 	#show rooms and objects layers
 	GM.roomsLayer.visible = True
@@ -127,6 +127,9 @@ def loadObjectSprite(obj):
 	fStr = getFileContents(objFile)
 	sprId = getFileVal(fStr,"spriteId")
 	print("sprite id: " + sprId)
+	#do nothing in the case of an object with no sprite
+	if (sprId == "00000000-0000-0000-0000-000000000000"):
+		return None
 	#search the sprites directory for the sprite whose id matches the object's sprite id
 	sprName = findSpriteById(sprId)
 	#check the directory of the found sprite for its image
