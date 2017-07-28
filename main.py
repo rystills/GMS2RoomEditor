@@ -50,7 +50,7 @@ def openProject(projFile):
 	#create a button for each object
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
-		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left")),loadObjectSprite(objList[i])
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,45*i,selectObject,[objList[i]],"left",loadObjectSprite(objList[i])))
 		
 	#show rooms and objects layers
 	GM.roomsLayer.visible = True
