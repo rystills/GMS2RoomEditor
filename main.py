@@ -1,4 +1,7 @@
 #Import Modules
+import sys
+#add class dir to path so we can freely import classes
+sys.path.insert(0,"classes")
 import pygame, os
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename

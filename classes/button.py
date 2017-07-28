@@ -21,7 +21,9 @@ class Button(pygame.sprite.Sprite):
 		self.color = pygame.Color(200,200,200,255)
 		self.pressed = False
 		self.layer = None
+		#spr is the passed on sprite, if any
 		self.spr = sprite
+		#sprSize is the target dimension (width and height) that we will scale to
 		self.sprSize = sprSize
 		if (self.spr != None):
 			#scale the larger dimension to sprSize, in order to preserve aspect ratio
@@ -29,7 +31,7 @@ class Button(pygame.sprite.Sprite):
 			#width is the larger dimension
 			if (sprDims[0] > sprDims[1]):
 				self.scaledSpr = pygame.transform.smoothscale(self.spr,(self.sprSize,int((self.sprSize/sprDims[0]) * sprDims[1])))
-			#height is the larger dimension
+			#height is the larger or equal dimension
 			else:
 				self.scaledSpr = pygame.transform.smoothscale(self.spr,(int((self.sprSize/sprDims[1]) * sprDims[0]), self.sprSize))
 			self.image = self.scaledSpr
@@ -38,7 +40,7 @@ class Button(pygame.sprite.Sprite):
 		
 	#update our drawSurface (only needs to happen when our color or text is altered)
 	def updateImage(self):
-		#if we don't have a sprite, just re-render font. otherwise, clear and redraw image first
+		#if we don't have a sprite, just re-render font. otherwise, redraw image first
 		if (self.spr == None):
 			self.image = self.font.render(self.text, True, self.color)
 		else:
