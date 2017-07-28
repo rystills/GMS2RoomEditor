@@ -87,6 +87,11 @@ class Layer(pygame.sprite.Sprite):
 			self.scrollBarRect = pygame.rect.Rect(self.image.get_width()-20 if self.scrollbarPos == "right" else 0,
 				(self.viewHeight - self.scrollbarHeight) * self.scrollY + self.titleOffset,20,self.scrollbarHeight)
 			
+			#temporarily offset scrollbarRect by layer pos so update is local to layer
+			oldCenter = self.scrollBarRect.center
+			self.scrollBarRect.top += self.rect.top
+			self.scrollBarRect.left += self.rect.left
+			
 			#move scrollbar when dragged
 			hovering = False
 			if (self.scrollBarRect.collidepoint(pygame.mouse.get_pos())):
@@ -118,6 +123,9 @@ class Layer(pygame.sprite.Sprite):
 			#update our draw surface if our color changed
 			if (white != self.scrollbarColor.r):
 				self.scrollbarColor = pygame.Color(white,white,white,255)
+				
+			#finally, return scrollbarRect to local position
+			self.scrollBarRect.center = oldCenter
 			
 	#update all contained objects
 	def update(self):
