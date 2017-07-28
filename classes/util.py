@@ -63,9 +63,9 @@ def loadObjectSprite(obj):
 	fStr = getFileContents(objFile)
 	sprId = getFileVal(fStr,"spriteId")
 	print("sprite id: " + sprId)
-	#do nothing in the case of an object with no sprite
+	#in the case of an object with no sprite, return the default sprite
 	if (sprId == "00000000-0000-0000-0000-000000000000"):
-		return None
+		return GM.noSpriteImg
 	#search the sprites directory for the sprite whose id matches the object's sprite id
 	sprName = findSpriteById(sprId)
 	#check the directory of the found sprite for its image

@@ -1,14 +1,17 @@
 import pygame
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, RLEACCEL
 from layer import Layer
-import sys, os
+import sys
+from util import *
 #set 'this' to point to this module, so we can maintain module-wide globals
 this = sys.modules[__name__]
 
 #GameManager module; houses most game related variables and methods
 def init(screenWidthIn, screenHeightIn):
-	#store directories
+	#store base project directories
 	this.rootDir = os.path.split(os.path.abspath(sys.argv[0]))[0]
+	this.rootImgDir = os.path.join(this.rootDir,"images")
+	
 	#init screen width and height (in pixels)
 	this.screenWidth = screenWidthIn
 	this.screenHeight = screenHeightIn
@@ -43,6 +46,9 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#store room objects
 	this.roomObjects = pygame.sprite.LayeredUpdates()
+	
+	#load image for objects with no sprite
+	this.noSpriteImg = loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
 
 #update mouse click and press variables
 def updateMouseVars():

@@ -1,6 +1,6 @@
 #Import Modules
 import sys
-#add class dir to path so we can freely import classes
+#add class dir to path so we can import classes freely
 sys.path.insert(0,"classes")
 import pygame, os
 from tkinter import Tk
