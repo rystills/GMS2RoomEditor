@@ -7,7 +7,7 @@ import pygame
 import GM
 
 #simple class that stores and renders a group of objects
-class Layer(pygame.sprite.Sprite):
+class Layer():
 	def __init__(self,x,y,width,height,title="",scrollbarPos = "right"):
 		self.image = pygame.surface.Surface((width,height))
 		self.rect = self.image.get_rect()

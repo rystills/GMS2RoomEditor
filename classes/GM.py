@@ -40,6 +40,9 @@ def init(screenWidthIn, screenHeightIn):
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])
 	pygame.display.set_caption("Room Editor")
+	
+	#store room objects
+	this.roomObjects = pygame.sprite.LayeredUpdates()
 
 #update mouse click and press variables
 def updateMouseVars():
@@ -72,14 +75,20 @@ def render():
 	this.screen.blit(this.objectsLayer.image,this.objectsLayer.rect)
 	#render objects
 	this.objects.draw(this.screen)
+	#render room objects
+	this.roomObjects.draw(this.screen)
 	#push final screen render to the display	 
 	pygame.display.flip()
 
 #update all objects
-
 def updateObjects():
+	#update objects
 	for i in this.objects:
 		i.update()
+	#update room objects
+	for i in this.roomObjects:
+		i.update()
+	#update rooms and objects lists
 	this.roomsLayer.update()
 	this.objectsLayer.update()
 
