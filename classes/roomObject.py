@@ -41,6 +41,11 @@ class RoomObject(pygame.sprite.Sprite):
 				#set selection to this object, now that we've placed it
 				GM.selection = self
 				GM.selectedThisPress = True
+				GM.placingObject = False
+			return
+		
+		#don't do standard object update is we are in the process of placing an object
+		if (GM.placingObject):
 			return
 		#check mouse button status
 		#check if mouse is on this button 

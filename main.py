@@ -73,6 +73,7 @@ def selectObject(obj):
 	newObj = RoomObject(mousePos[0],mousePos[1],obj,0,1)
 	newObj.followMouse = True
 	GM.roomObjects.add(newObj)
+	GM.placingObject = True
 
 #main function: init game, then run the core game loop
 def main():

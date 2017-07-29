@@ -50,9 +50,10 @@ def init(screenWidthIn, screenHeightIn):
 	#load image for objects with no sprite
 	this.noSpriteImg = loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
 	
-	#store room vars
+	#store vars relating to room object manipulation
 	this.selection = None
 	this.selectedThisPress = False
+	this.placingObject = False
 	
 #update mouse click and press variables
 def updateMouseVars():
