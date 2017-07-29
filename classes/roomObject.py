@@ -56,15 +56,12 @@ class RoomObject(pygame.sprite.Sprite):
 				self.pressed = True
 				self.pressPos = pygame.mouse.get_pos()
 			
-			#if mouse button was just released on us, trigger a press 
-			if (GM.mouseReleasedLeft and self.pressed):
-				GM.selection = self
-			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
 		
-		#if mouse button is not held down, toggle pressed off
-		if (not GM.mouseDownLeft): 
+		#if mouse button was just released on us, trigger a press 
+		if (GM.mouseReleasedLeft and self.pressed):
+			GM.selection = self
 			self.pressed = False
 			
 		#if pressed, move with mouse
