@@ -23,3 +23,36 @@ class RoomObject(pygame.sprite.Sprite):
 		#move our image to be centered at our x,y pos
 		self.rect.centerx = self.x
 		self.rect.centery = self.y
+		self.pressPos = (0,0)
+		
+	def update(self):
+		#check mouse button status
+		#check if mouse is on this button 
+		self.state = "neutral"
+		if (self.rect.collidepoint(pygame.mouse.get_pos())):
+			#if mouse button was just pressed on us, toggle pressed on
+			if (GM.mousePressedLeft): 
+				self.pressed = True
+				self.pressPos = pygame.mouse.get_pos()
+			
+			#if mouse button was just released on us, trigger a press 
+			if (GM.mouseReleasedLeft and self.pressed):
+				pass
+				#self.function(*self.args)
+			
+			#set state based off of pressed
+			self.state = "press" if self.pressed else "hover"
+		
+		#if mouse button is not held down, toggle pressed off
+		if (not GM.mouseDownLeft): 
+			self.pressed = False
+			
+		#if pressed, move with mouse
+		if (self.pressed):
+			mousePos = pygame.mouse.get_pos()
+			posDiff = (mousePos[0]-self.pressPos[0],mousePos[1]-self.pressPos[1])
+			self.x += posDiff[0]
+			self.y += posDiff[1]
+			self.rect.centerx = self.x
+			self.rect.centery = self.y
+			self.pressPos = mousePos

@@ -69,7 +69,6 @@ class Button(pygame.sprite.Sprite):
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
 		
-		
 		#if mouse button is not held down, toggle pressed off
 		if (not GM.mouseDownLeft): 
 			self.pressed = False
