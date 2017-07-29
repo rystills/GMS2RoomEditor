@@ -81,6 +81,10 @@ def loadImage(imageName, convertAlpha=False, colorkey=None):
 		image.set_colorkey(colorkey, RLEACCEL)
 	return image
 
+#round input float to the nearest specified base
+def roundBase(x, base=5):
+	return int(base * round(float(x)/base))
+
 #load the sprite corresponding to the passed in obj name
 def loadObjectSprite(obj):
 	#read the object file to get its sprite id

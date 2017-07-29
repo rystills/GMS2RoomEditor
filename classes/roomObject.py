@@ -16,6 +16,7 @@ class RoomObject(pygame.sprite.Sprite):
 		self.y = y
 		self.objType = objType
 		self.rot = rot
+		self.noSnapRot = self.rot
 		self.scale = scale
 		self.image,self.imgHasAlpha = loadObjectSprite(self.objType)
 		self.rect = self.image.get_rect()
@@ -30,9 +31,11 @@ class RoomObject(pygame.sprite.Sprite):
 		
 	#set rotation to specified rot value
 	def setRotation(self,newRot):
+		self.noSnapRot = newRot
+		roundRot = roundBase(self.noSnapRot)
 		#do nothing if new rotation is the same as old rotation
-		if (newRot != self.rot):
-			self.rot = newRot
+		if (roundRot != self.rot):
+			self.rot = roundRot
 			self.image = pygame.transform.rotate(self.baseImage,newRot)
 			#convert with alpha
 			if (self.imgHasAlpha):
@@ -82,7 +85,7 @@ class RoomObject(pygame.sprite.Sprite):
 			
 		#rotate when R is pressed if selected
 		if (GM.selection == self and GM.rDown):
-			self.setRotation(self.rot + 2)
+			self.setRotation(self.noSnapRot + (GM.mouseDy- GM.mouseDx)/2)
 			
 		#if pressed, move with mouse
 		if (self.pressed):
