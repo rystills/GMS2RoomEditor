@@ -34,6 +34,10 @@ class RoomObject(pygame.sprite.Sprite):
 			#exit follow mode when mouse is pressed	
 			if (GM.mousePressedLeft):
 				self.followMouse = False
+				self.pressPos = self.rect.center
+				#once we finish dragging, update x,y pos to rect pos
+				self.x = self.rect.centerx
+				self.y = self.rect.centery
 			return
 		#check mouse button status
 		#check if mouse is on this button 
@@ -59,6 +63,7 @@ class RoomObject(pygame.sprite.Sprite):
 		#if pressed, move with mouse
 		if (self.pressed):
 			mousePos = pygame.mouse.get_pos()
+			#get distance mouse moved since last frame, and update position accordingly
 			posDiff = (mousePos[0]-self.pressPos[0],mousePos[1]-self.pressPos[1])
 			self.x += posDiff[0]
 			self.y += posDiff[1]
