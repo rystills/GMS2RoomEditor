@@ -21,7 +21,6 @@ class Layer():
 		self.scrollHeightDiff = 0
 		self.scrollBarDragging = False
 		self.scrollBarRect = None
-		self.dragStartPos = (0,0)
 		self.scrollbarColor = pygame.Color(200,200,200,255)
 		self.scrollbarPos = scrollbarPos
 		self.title = title
@@ -94,22 +93,22 @@ class Layer():
 			
 			#move scrollbar when dragged
 			hovering = False
-			if (self.scrollBarRect.collidepoint(pygame.mouse.get_pos())):
+			if (self.scrollBarRect.collidepoint(GM.mouseX,GM.mouseY)):
 				hovering = True
 				#if mouse button was just pressed on the scrollbar, toggle pressed on
 				if (GM.mousePressedLeft): 
 					self.scrollBarDragging = True
-					self.dragStartPos = pygame.mouse.get_pos()
+					#don't modify selection if we clicked on a scrollbar
+					GM.selectedThisPress = True
 			
 			#if mouse is held on the scrollbar, drag it vertically 
 			if (GM.mouseDownLeft):
 				if (self.scrollBarDragging):
 					#scroll as a percentage of the total scroll distance
-					self.scrollY -= (self.dragStartPos[1] - pygame.mouse.get_pos()[1]) / (self.viewHeight - self.scrollbarHeight)
+					self.scrollY += (GM.mouseDy) / (self.viewHeight - self.scrollbarHeight)
 					#keep scroll value bounded
 					self.scrollY = max(0,min(self.scrollY,1))
 					#update relative drag pos to current mouse pos
-					self.dragStartPos = pygame.mouse.get_pos()
 			#release scrollbar when no longer dragging
 			else:
 				self.scrollBarDragging = False

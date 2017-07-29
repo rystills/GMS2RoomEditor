@@ -24,7 +24,6 @@ class RoomObject(pygame.sprite.Sprite):
 		#move our image to be centered at our x,y pos
 		self.rect.centerx = self.x
 		self.rect.centery = self.y
-		self.pressPos = (0,0)
 		self.followMouse = False
 		self.pressed = False
 		print(self.imgHasAlpha)
@@ -49,11 +48,10 @@ class RoomObject(pygame.sprite.Sprite):
 	def update(self):
 		#if we are in follow mouse mode, don't do anything until we detect a leftclick
 		if (self.followMouse):
-			self.rect.center = pygame.mouse.get_pos()
+			self.rect.center = GM.mouseX,GM.mouseY
 			#exit follow mode when mouse is pressed	
 			if (GM.mousePressedLeft):
 				self.followMouse = False
-				self.pressPos = self.rect.center
 				#once we finish dragging, update x,y pos to rect pos
 				self.x = self.rect.centerx
 				self.y = self.rect.centery
@@ -69,11 +67,10 @@ class RoomObject(pygame.sprite.Sprite):
 		#check mouse button status
 		#check if mouse is on this button 
 		self.state = "neutral"
-		if (self.rect.collidepoint(pygame.mouse.get_pos())):
+		if (self.rect.collidepoint(GM.mouseX,GM.mouseY)):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
 				self.pressed = True
-				self.pressPos = pygame.mouse.get_pos()
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
@@ -89,11 +86,8 @@ class RoomObject(pygame.sprite.Sprite):
 			
 		#if pressed, move with mouse
 		if (self.pressed):
-			mousePos = pygame.mouse.get_pos()
 			#get distance mouse moved since last frame, and update position accordingly
-			posDiff = (mousePos[0]-self.pressPos[0],mousePos[1]-self.pressPos[1])
-			self.x += posDiff[0]
-			self.y += posDiff[1]
+			self.x += GM.mouseDx
+			self.y += GM.mouseDy
 			self.rect.centerx = self.x
 			self.rect.centery = self.y
-			self.pressPos = mousePos

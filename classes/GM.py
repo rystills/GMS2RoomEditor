@@ -35,6 +35,10 @@ def init(screenWidthIn, screenHeightIn):
 	this.mouseDownLeft = False
 	this.mouseReleasedLeft = False
 	
+	#init mouse pos vars
+	this.mouseX = this.mouseY = -1
+	this.mouseDx = this.mouseDy = -1
+	
 	#init keyboard input vars
 	this.rPressed = False
 	this.rDown = False
@@ -60,6 +64,9 @@ def init(screenWidthIn, screenHeightIn):
 	this.selectedThisPress = False
 	this.placingObject = False
 	
+	#store editor state related vars
+	this.angleSnaps = False
+	
 #update mouse state variables
 def updateMouseVars():
 	#left mouse button down
@@ -79,6 +86,12 @@ def updateMouseVars():
 				this.selectedThisPress = False
 			else:
 				this.selection = None
+				
+	#update mouse position and delta values
+	newMousePos = pygame.mouse.get_pos()
+	this.mouseDx = newMousePos[0] - this.mouseX
+	this.mouseDy = newMousePos[1] - this.mouseY
+	this.mouseX,this.mouseY = newMousePos
 				
 #update keyboard state vars
 def updateKeyboardVars():

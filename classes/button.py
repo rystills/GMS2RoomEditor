@@ -58,7 +58,7 @@ class Button(pygame.sprite.Sprite):
 		#check mouse button status
 		#check if mouse is on this button 
 		self.state = "neutral"
-		if (self.rect.collidepoint(pygame.mouse.get_pos())):
+		if (self.rect.collidepoint(GM.mouseX,GM.mouseY)):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
 				self.pressed = True
