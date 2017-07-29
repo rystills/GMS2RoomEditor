@@ -69,7 +69,10 @@ def openRoom(rm):
 #select the specified object
 def selectObject(obj):
 	print("selected object: " + obj)
-	GM.roomObjects.add(RoomObject(640,480,obj,0,1))
+	mousePos = pygame.mouse.get_pos()
+	newObj = RoomObject(mousePos[0],mousePos[1],obj,0,1)
+	newObj.followMouse = True
+	GM.roomObjects.add(newObj)
 
 #main function: init game, then run the core game loop
 def main():

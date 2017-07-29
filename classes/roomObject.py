@@ -24,8 +24,17 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rect.centerx = self.x
 		self.rect.centery = self.y
 		self.pressPos = (0,0)
+		self.followMouse = False
+		self.pressed = False
 		
 	def update(self):
+		#if we are in follow mouse mode, don't do anything until we detect a leftclick
+		if (self.followMouse):
+			self.rect.center = pygame.mouse.get_pos()
+			#exit follow mode when mouse is pressed	
+			if (GM.mousePressedLeft):
+				self.followMouse = False
+			return
 		#check mouse button status
 		#check if mouse is on this button 
 		self.state = "neutral"
