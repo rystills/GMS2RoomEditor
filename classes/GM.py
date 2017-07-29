@@ -50,6 +50,10 @@ def init(screenWidthIn, screenHeightIn):
 	#load image for objects with no sprite
 	this.noSpriteImg = loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
 	
+	#store room vars
+	this.selection = None
+	this.selectedThisPress = False
+	
 #update mouse click and press variables
 def updateMouseVars():
 	#left mouse button down
@@ -63,12 +67,27 @@ def updateMouseVars():
 		this.mouseDownLeft = False
 		this.mousePressedLeft = False
 		
+		if (this.mouseReleasedLeft):
+			if (this.selectedThisPress):
+				this.selectedThisPress = False
+			else:
+				#set selection to none if mouse was just released
+				this.selection = None
+		
 #check if the user has pressed the escape key or the close button, and if so, quit
 def checkQuit():
 	for event in pygame.event.get():
 		if (event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)):
 			this.running = False
 			return True
+	
+#draw a selection box around the currently selected object
+def drawSelectionBox():
+	if (this.selection):
+		buffer = 5
+		selRect = this.selection.rect
+		pygame.draw.rect(this.screen,pygame.color.Color(255,0,0),
+						pygame.rect.Rect(selRect.left - buffer, selRect.top - buffer, selRect.width + 2*buffer, selRect.height + 2*buffer),2)
 	
 #render all objects to the screen	
 def render():
@@ -83,6 +102,9 @@ def render():
 	this.objects.draw(this.screen)
 	#render room objects
 	this.roomObjects.draw(this.screen)
+	#draw selection box around selected object
+	this.drawSelectionBox()
+	
 	#push final screen render to the display	 
 	pygame.display.flip()
 

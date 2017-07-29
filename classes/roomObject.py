@@ -38,6 +38,9 @@ class RoomObject(pygame.sprite.Sprite):
 				#once we finish dragging, update x,y pos to rect pos
 				self.x = self.rect.centerx
 				self.y = self.rect.centery
+				#set selection to this object, now that we've placed it
+				GM.selection = self
+				GM.selectedThisPress = True
 			return
 		#check mouse button status
 		#check if mouse is on this button 
@@ -50,8 +53,7 @@ class RoomObject(pygame.sprite.Sprite):
 			
 			#if mouse button was just released on us, trigger a press 
 			if (GM.mouseReleasedLeft and self.pressed):
-				pass
-				#self.function(*self.args)
+				GM.selection = self
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
