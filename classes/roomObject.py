@@ -18,9 +18,9 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rot = rot
 		self.noSnapRot = self.rot
 		self.scale = scale
-		self.image,self.imgHasAlpha = loadObjectSprite(self.objType)
+		self.baseImage,self.imgHasAlpha = loadObjectSprite(self.objType)
+		self.image = self.baseImage.copy()
 		self.rect = self.image.get_rect()
-		self.baseImage = self.image
 		self.layer = None
 		#move our image to be centered at our x,y pos
 		self.rect.centerx = self.x
@@ -31,12 +31,13 @@ class RoomObject(pygame.sprite.Sprite):
 		
 	#set rotation to specified rot value
 	def setRotation(self,newRot):
-		self.noSnapRot = newRot
-		roundRot = roundBase(self.noSnapRot)
+		self.noSnapRot = newRot % 360
+		roundRot = roundBase(self.noSnapRot) % 360
 		#do nothing if new rotation is the same as old rotation
 		if (roundRot != self.rot):
 			self.rot = roundRot
-			self.image = pygame.transform.rotate(self.baseImage,newRot)
+			#don't bother rotating the base image if our new rotation is 0
+			self.image = pygame.transform.rotate(self.baseImage,roundRot) if roundRot != 0 else self.baseImage.copy()
 			#convert with alpha
 			if (self.imgHasAlpha):
 				self.image = self.image.convert_alpha()
