@@ -55,7 +55,8 @@ def openProject(projFile):
 	#create a button for each object
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
-		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,90*i,selectObject,[objList[i]],"left",loadObjectSprite(objList[i])))
+		objSpr,hasAlpha = loadObjectSprite(objList[i])
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,90*i,selectObject,[objList[i]],"left",objSpr,hasAlpha))
 		
 	#show rooms and objects layers
 	GM.roomsLayer.visible = True
@@ -70,7 +71,7 @@ def openRoom(rm):
 def selectObject(obj):
 	print("selected object: " + obj)
 	mousePos = pygame.mouse.get_pos()
-	newObj = RoomObject(mousePos[0],mousePos[1],obj,0,1)
+	newObj = RoomObject(mousePos[0],mousePos[1],obj, 0,1)
 	newObj.followMouse = True
 	GM.roomObjects.add(newObj)
 	GM.placingObject = True

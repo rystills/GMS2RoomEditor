@@ -91,10 +91,11 @@ def loadObjectSprite(obj):
 	print("sprite id: " + sprId)
 	#in the case of an object with no sprite, return the default sprite
 	if (sprId == "00000000-0000-0000-0000-000000000000"):
-		return GM.noSpriteImg
+		return GM.noSpriteImg,True
 	#search the sprites directory for the sprite whose id matches the object's sprite id
 	sprName = findSpriteById(sprId)
 	#check the directory of the found sprite for its image
 	sprImgPath = os.path.join(os.path.join(GM.sprDir,sprName),getSpriteImage(sprName))
 	#load the found image
-	return loadImage(sprImgPath, pngHasAlpha(sprImgPath))
+	hasAlpha =  pngHasAlpha(sprImgPath)
+	return loadImage(sprImgPath,hasAlpha),hasAlpha

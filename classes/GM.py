@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, QUIT, K_ESCAPE
+from pygame.locals import KEYDOWN, K_r, QUIT, K_ESCAPE
 from layer import Layer
 import sys
 from util import *
@@ -30,10 +30,15 @@ def init(screenWidthIn, screenHeightIn):
 	this.deltaTime = 0
 	this.clock = pygame.time.Clock()
 	
-	#init input vars
+	#init mouse input vars
 	this.mousePressedLeft = False
 	this.mouseDownLeft = False
 	this.mouseReleasedLeft = False
+	
+	#init keyboard input vars
+	this.rPressed = False
+	this.rDown = False
+	this.rReleased = False
 	
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
@@ -55,7 +60,7 @@ def init(screenWidthIn, screenHeightIn):
 	this.selectedThisPress = False
 	this.placingObject = False
 	
-#update mouse click and press variables
+#update mouse state variables
 def updateMouseVars():
 	#left mouse button down
 	if (pygame.mouse.get_pressed()[0]):
@@ -68,12 +73,26 @@ def updateMouseVars():
 		this.mouseDownLeft = False
 		this.mousePressedLeft = False
 		
+		#set selection to none if mouse was just released and we didn't just select something
 		if (this.mouseReleasedLeft):
 			if (this.selectedThisPress):
 				this.selectedThisPress = False
 			else:
-				#set selection to none if mouse was just released
 				this.selection = None
+				
+#update keyboard state vars
+def updateKeyboardVars():
+	#r button down
+	if pygame.key.get_pressed()[K_r]:
+		this.rPressed = not this.rDown
+		this.rDown = True
+		this.rReleased = False
+	#r button up
+	else:
+		this.rReleased = this.rDown
+		this.rDown = False
+		this.rPressed = False
+		
 		
 #check if the user has pressed the escape key or the close button, and if so, quit
 def checkQuit():
@@ -129,6 +148,7 @@ def tick():
 	if (this.checkQuit()):
 		return True
 	this.updateMouseVars()
+	this.updateKeyboardVars()
 	this.updateObjects()
 
 #delete all UI objects

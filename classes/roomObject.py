@@ -17,8 +17,9 @@ class RoomObject(pygame.sprite.Sprite):
 		self.objType = objType
 		self.rot = rot
 		self.scale = scale
-		self.image = loadObjectSprite(self.objType)
+		self.image,self.imgHasAlpha = loadObjectSprite(self.objType)
 		self.rect = self.image.get_rect()
+		self.baseImage = self.image
 		self.layer = None
 		#move our image to be centered at our x,y pos
 		self.rect.centerx = self.x
@@ -26,6 +27,24 @@ class RoomObject(pygame.sprite.Sprite):
 		self.pressPos = (0,0)
 		self.followMouse = False
 		self.pressed = False
+		print(self.imgHasAlpha)
+		
+	#set rotation to specified rot value
+	def setRotation(self,newRot):
+		#do nothing if new rotation is the same as old rotation
+		if (newRot != self.rot):
+			self.rot = newRot
+			self.image = pygame.transform.rotate(self.baseImage,newRot)
+			#convert with alpha
+			if (self.imgHasAlpha):
+				self.image = self.image.convert_alpha()
+			#convert without alpha
+			else:
+				self.image = self.image.convert()
+			#update rect to rotated image, preserving old rect center
+			self.rect = self.image.get_rect()
+			self.rect.centerx = self.x
+			self.rect.centery = self.y
 		
 	def update(self):
 		#if we are in follow mouse mode, don't do anything until we detect a leftclick
@@ -63,6 +82,10 @@ class RoomObject(pygame.sprite.Sprite):
 		if (GM.mouseReleasedLeft and self.pressed):
 			GM.selection = self
 			self.pressed = False
+			
+		#rotate when R is pressed if selected
+		if (GM.selection == self and GM.rDown):
+			self.setRotation(self.rot + 2)
 			
 		#if pressed, move with mouse
 		if (self.pressed):
