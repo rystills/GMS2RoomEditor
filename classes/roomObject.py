@@ -37,8 +37,12 @@ class RoomObject(pygame.sprite.Sprite):
 		#do nothing if new rotation is the same as old rotation
 		if (roundRot != self.rot):
 			self.rot = roundRot
-			#don't bother rotating the base image if our new rotation is 0
-			self.image = pygame.transform.rotate(self.baseImage,roundRot) if roundRot != 0 else self.baseImage.copy()
+			#use rotozoom if we are rotated and scaled
+			if (self.scale != 1):
+				self.image = pygame.transform.rotozoom(self.baseImage,roundRot,self.scale)
+			#we are just rotated
+			else:
+				self.image = pygame.transform.rotate(self.baseImage,roundRot)
 			#convert with alpha
 			if (self.imgHasAlpha):
 				self.image = self.image.convert_alpha()
@@ -55,19 +59,24 @@ class RoomObject(pygame.sprite.Sprite):
 		print("new scale: " + str(newScale))
 		self.noSnapScale = max(newScale,0.05)
 		roundScale = roundBase(self.noSnapScale,0.05,2) if GM.scaleSnaps else self.noSnapScale
-		#do nothing if new rotation is the same as old rotation
+		#do nothing if new scale is the same as old scale
 		if (roundScale != self.scale):
-			self.scale = roundScale
-			#don't bother rotating the base image if our new rotation is 0
-			self.image = pygame.transform.scale(self.baseImage,
-											(int(self.baseImage.get_width()*roundScale),int(self.baseImage.get_height()*roundScale))) if roundScale != 1 else self.baseImage.copy()
+			self.scale = roundScale			
+			scaledWidth = int(self.baseImage.get_width()*self.scale)
+			scaledHeight = int(self.baseImage.get_height()*self.scale)
+			#use rotozoom if we are rotated and scaled
+			if (self.rot != 0):
+				self.image = pygame.transform.rotozoom(self.baseImage,self.rot,self.scale)
+			#we are just scaled
+			else:
+				self.image = pygame.transform.scale(self.baseImage,(scaledWidth,scaledHeight))
 			#convert with alpha
 			if (self.imgHasAlpha):
 				self.image = self.image.convert_alpha()
 			#convert without alpha
 			else:
 				self.image = self.image.convert()
-			#update rect to rotated image, preserving old rect center
+			#update rect to scaled image, preserving old rect center
 			self.rect = self.image.get_rect()
 			self.rect.centerx = self.x
 			self.rect.centery = self.y
