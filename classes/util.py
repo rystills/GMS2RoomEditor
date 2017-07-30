@@ -83,9 +83,13 @@ def loadImage(imageName, convertAlpha=False, colorkey=None):
 
 #round input float to the nearest specified base
 def roundBase(x, base=5, nRoundDigits = 0):
+	#we are rounding to a whole number
 	if (not nRoundDigits):
 		return int(base * round(float(x)/base))
-	return round(base * (float(x)/base),nRoundDigits)
+	#we are rounding to a decimal value, so lets convert that to a whole value then divide back 
+	x*=10**nRoundDigits
+	xR = int(base * round(float(x)/base))
+	return float(xR)/10**nRoundDigits
 
 #load the sprite corresponding to the passed in obj name
 def loadObjectSprite(obj):

@@ -58,7 +58,8 @@ class RoomObject(pygame.sprite.Sprite):
 		print("old scale: " + str(self.scale))
 		print("new scale: " + str(newScale))
 		self.noSnapScale = max(newScale,0.05)
-		roundScale = roundBase(self.noSnapScale,0.05,2) if GM.scaleSnaps else self.noSnapScale
+		roundScale = roundBase(self.noSnapScale,5,2) if GM.scaleSnaps else self.noSnapScale
+		print("rounded scale: " + str(roundScale))
 		#do nothing if new scale is the same as old scale
 		if (roundScale != self.scale):
 			self.scale = roundScale			

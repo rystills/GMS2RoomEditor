@@ -128,14 +128,17 @@ def checkQuit():
 #draw a selection box around the currently selected object
 def drawSelectionBox():
 	if (this.selection):
-		#first draw a rect surrounding the selected object
+		#draw a rect surrounding the selected object
 		buffer = 5
 		selRect = this.selection.rect
 		pygame.draw.rect(this.screen,pygame.color.Color(255,0,0),
 						pygame.rect.Rect(selRect.left - buffer, selRect.top - buffer, selRect.width + 2*buffer, selRect.height + 2*buffer),2)
 	
-		#next, draw the current object rotation in small text
-		this.screen.blit(this.fontSmall.render(str(this.selection.rot),True,pygame.color.Color(0,255,0)),(selRect.left - buffer, selRect.top - buffer))
+		#draw the current object rotation in small text
+		this.screen.blit(this.fontSmall.render(str(this.selection.rot),True,pygame.color.Color(0,255,0)),(selRect.left - buffer, selRect.top - buffer - 10))
+		
+		#draw the current object scale in small text
+		this.screen.blit(this.fontSmall.render(str(this.selection.scale),True,pygame.color.Color(0,255,255)),(selRect.left - buffer + 40, selRect.top - buffer - 10))
 	
 #render all objects to the screen	
 def render():
