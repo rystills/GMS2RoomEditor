@@ -18,6 +18,7 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rot = rot
 		self.noSnapRot = self.rot
 		self.scale = scale
+		self.noSnapScale = self.scale
 		self.baseImage,self.imgHasAlpha = loadObjectSprite(self.objType)
 		self.image = self.baseImage.copy()
 		self.rect = self.image.get_rect()
@@ -32,12 +33,34 @@ class RoomObject(pygame.sprite.Sprite):
 	#set rotation to specified rot value
 	def setRotation(self,newRot):
 		self.noSnapRot = newRot % 360
-		roundRot = roundBase(self.noSnapRot) % 360
+		roundRot = roundBase(self.noSnapRot) % 360 if GM.angleSnaps else self.noSnapRot
 		#do nothing if new rotation is the same as old rotation
 		if (roundRot != self.rot):
 			self.rot = roundRot
 			#don't bother rotating the base image if our new rotation is 0
 			self.image = pygame.transform.rotate(self.baseImage,roundRot) if roundRot != 0 else self.baseImage.copy()
+			#convert with alpha
+			if (self.imgHasAlpha):
+				self.image = self.image.convert_alpha()
+			#convert without alpha
+			else:
+				self.image = self.image.convert()
+			#update rect to rotated image, preserving old rect center
+			self.rect = self.image.get_rect()
+			self.rect.centerx = self.x
+			self.rect.centery = self.y
+			
+	def setScale(self,newScale):
+		print("old scale: " + str(self.scale))
+		print("new scale: " + str(newScale))
+		self.noSnapScale = max(newScale,0.05)
+		roundScale = roundBase(self.noSnapScale,0.05,2) if GM.scaleSnaps else self.noSnapScale
+		#do nothing if new rotation is the same as old rotation
+		if (roundScale != self.scale):
+			self.scale = roundScale
+			#don't bother rotating the base image if our new rotation is 0
+			self.image = pygame.transform.scale(self.baseImage,
+											(int(self.baseImage.get_width()*roundScale),int(self.baseImage.get_height()*roundScale))) if roundScale != 1 else self.baseImage.copy()
 			#convert with alpha
 			if (self.imgHasAlpha):
 				self.image = self.image.convert_alpha()
@@ -87,6 +110,10 @@ class RoomObject(pygame.sprite.Sprite):
 		#rotate when R is pressed if selected
 		if (GM.selection == self and GM.rDown):
 			self.setRotation(self.noSnapRot + (GM.mouseDy- GM.mouseDx)/2)
+			
+		#scale when E is pressed if selected
+		if (GM.selection == self and GM.eDown):
+			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/100)
 			
 		#if pressed, move with mouse
 		if (self.pressed):

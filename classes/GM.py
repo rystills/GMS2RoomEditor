@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, K_r, QUIT, K_ESCAPE
+from pygame.locals import KEYDOWN, K_r, K_e, QUIT, K_ESCAPE
 from layer import Layer
 import sys
 from util import *
@@ -65,7 +65,8 @@ def init(screenWidthIn, screenHeightIn):
 	this.placingObject = False
 	
 	#store editor state related vars
-	this.angleSnaps = False
+	this.angleSnaps = True
+	this.scaleSnaps = True
 	
 #update mouse state variables
 def updateMouseVars():
@@ -106,6 +107,16 @@ def updateKeyboardVars():
 		this.rDown = False
 		this.rPressed = False
 		
+	#e button down
+	if pygame.key.get_pressed()[K_e]:
+		this.ePressed = not this.rDown
+		this.eDown = True
+		this.eReleased = False
+	#r button up
+	else:
+		this.eReleased = this.rDown
+		this.eDown = False
+		this.ePressed = False
 		
 #check if the user has pressed the escape key or the close button, and if so, quit
 def checkQuit():
