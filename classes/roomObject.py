@@ -114,7 +114,12 @@ class RoomObject(pygame.sprite.Sprite):
 		
 		#if mouse button was just released on us, trigger a press 
 		if (GM.mouseReleasedLeft and self.pressed):
-			GM.selection = [self]
+			if (GM.ctrlDown):
+				if (not self in GM.selection):
+					GM.selection.append(self)
+			else:
+				GM.selection = [self]
+			GM.selectedThisPress = True
 			self.pressed = False
 			
 		#rotate when R is pressed if selected

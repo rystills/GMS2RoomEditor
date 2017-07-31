@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, K_r, K_e, QUIT, K_ESCAPE
+from pygame.locals import KEYDOWN, K_r, K_e, K_RCTRL, K_LCTRL, QUIT, K_ESCAPE
 from layer import Layer
 import sys
 from util import *
@@ -44,6 +44,14 @@ def init(screenWidthIn, screenHeightIn):
 	this.rDown = False
 	this.rReleased = False
 	
+	this.ePressed = False
+	this.eDown = False
+	this.eReleased = False
+	
+	this.ctrlPressed = False
+	this.ctrlDown = False
+	this.ctrlReleased = False
+	
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
 	this.roomsLayer = Layer(0,0,100,900,"Select Room")
@@ -80,13 +88,6 @@ def updateMouseVars():
 		this.mouseReleasedLeft = this.mouseDownLeft
 		this.mouseDownLeft = False
 		this.mousePressedLeft = False
-		
-		#set selection to none if mouse was just released and we didn't just select something
-		if (this.mouseReleasedLeft):
-			if (this.selectedThisPress):
-				this.selectedThisPress = False
-			else:
-				this.selection = []
 				
 	#update mouse position and delta values
 	newMousePos = pygame.mouse.get_pos()
@@ -118,6 +119,17 @@ def updateKeyboardVars():
 		this.eDown = False
 		this.ePressed = False
 		
+	#ctrl button down
+	if (pygame.key.get_pressed()[K_RCTRL] or pygame.key.get_pressed()[K_LCTRL]):
+		this.ctrlPressed = not this.ctrlDown
+		this.ctrlDown = True
+		this.ctrlReleased = False
+	#ctrl button up
+	else:
+		this.ctrlReleased = this.ctrlDown
+		this.ctrlDown = False
+		this.ctrlPressed = False
+				
 #check if the user has pressed the escape key or the close button, and if so, quit
 def checkQuit():
 	for event in pygame.event.get():
@@ -128,6 +140,7 @@ def checkQuit():
 #draw a selection box around the currently selected object
 def drawSelectionBox():
 	if (len(this.selection) != 0):
+		print(this.selection)
 		for sel in this.selection:
 			#draw a rect surrounding the selected object
 			buffer = 5
@@ -160,6 +173,15 @@ def render():
 	#push final screen render to the display	 
 	pygame.display.flip()
 
+#update current selection, deselecting if nothing was clicked
+def updateSelection():
+	#set selection to none if mouse was just released and we didn't just select something
+	if (this.mouseReleasedLeft):
+		if (this.selectedThisPress):
+			this.selectedThisPress = False
+		else:
+			this.selection = []
+
 #update all objects
 def updateObjects():
 	#update objects
@@ -182,6 +204,7 @@ def tick():
 	this.updateMouseVars()
 	this.updateKeyboardVars()
 	this.updateObjects()
+	this.updateSelection()
 
 #delete all UI objects
 def clearUI():
