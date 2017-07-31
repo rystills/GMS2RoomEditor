@@ -107,17 +107,23 @@ class RoomObject(pygame.sprite.Sprite):
 		if (self.rect.collidepoint(GM.mouseX,GM.mouseY)):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
-				self.pressed = True
-				GM.dragging = True
-				
-				if (GM.ctrlDown):
-					if (not self in GM.selection):
-						GM.selection.append(self)
-				elif (not self in GM.selection):
-					GM.selection = [self]
+				if (GM.altDown):
+					self.pressed = False
+					if (self in GM.selection):
+						GM.selection.remove(self)
+				else:
+					self.pressed = True
+					GM.dragging = True
+					
+					if (GM.ctrlDown):
+						if (not self in GM.selection):
+							GM.selection.append(self)
+					elif (not self in GM.selection):
+						GM.selection = [self]
+					self.pressed = False
 				#tell the game mamanger that a selection was just changed, so that it does not de-select us
 				GM.selectedThisPress = True
-				self.pressed = False
+					
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"

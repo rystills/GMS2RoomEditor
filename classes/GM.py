@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, K_r, K_e, K_RCTRL, K_LCTRL, QUIT, K_ESCAPE
+from pygame.locals import KEYDOWN, K_r, K_e, K_RCTRL, K_LCTRL, K_RALT, K_LALT, K_DELETE, QUIT, K_ESCAPE
 from layer import Layer
 import sys
 from util import *
@@ -51,6 +51,14 @@ def init(screenWidthIn, screenHeightIn):
 	this.ctrlPressed = False
 	this.ctrlDown = False
 	this.ctrlReleased = False
+	
+	this.altPressed = False
+	this.altDown = False
+	this.altReleased = False
+	
+	this.deletePressed = False
+	this.deleteDown = False
+	this.deleteReleased = False
 	
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
@@ -131,6 +139,28 @@ def updateKeyboardVars():
 		this.ctrlReleased = this.ctrlDown
 		this.ctrlDown = False
 		this.ctrlPressed = False
+		
+	#alt button down
+	if (pygame.key.get_pressed()[K_RALT] or pygame.key.get_pressed()[K_LALT]):
+		this.altPressed = not this.altDown
+		this.altDown = True
+		this.altReleased = False
+	#alt  button up
+	else:
+		this.altReleased = this.altDown
+		this.altDown = False
+		this.altPressed = False
+		
+	#delete button down
+	if (pygame.key.get_pressed()[K_DELETE] or pygame.key.get_pressed()[K_DELETE]):
+		this.deletePressed = not this.deleteDown
+		this.deleteDown = True
+		this.deleteReleased = False
+	#delete button up
+	else:
+		this.deleteReleased = this.deleteDown
+		this.deleteDown = False
+		this.deletePressed = False
 				
 #check if the user has pressed the escape key or the close button, and if so, quit
 def checkQuit():
@@ -183,6 +213,12 @@ def updateSelection():
 			this.selectedThisPress = False
 		else:
 			this.selection = []
+	
+	#kill all selected objects when delete is pressed
+	if (this.deletePressed):
+		for obj in this.selection:
+			obj.kill()
+		this.selection = []
 
 #update all objects
 def updateObjects():
