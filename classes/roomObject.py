@@ -13,7 +13,9 @@ class RoomObject(pygame.sprite.Sprite):
 		pygame.sprite.Sprite.__init__(self)
 		#store basic properties about the object we represent in the ecurrent room
 		self.x = x
+		self.noSnapX = self.x
 		self.y = y
+		self.noSnapY = self.y
 		self.objType = objType
 		self.rot = rot
 		self.noSnapRot = self.rot
@@ -30,7 +32,7 @@ class RoomObject(pygame.sprite.Sprite):
 		self.pressed = False
 		print(self.imgHasAlpha)
 		
-	#set rotation to specified rot value
+	#set rotation to newRot, snapping if angleSnaps are enabled
 	def setRotation(self,newRot):
 		self.noSnapRot = newRot % 360
 		roundRot = roundBase(self.noSnapRot) % 360 if GM.angleSnaps else self.noSnapRot
@@ -53,13 +55,11 @@ class RoomObject(pygame.sprite.Sprite):
 			self.rect = self.image.get_rect()
 			self.rect.centerx = self.x
 			self.rect.centery = self.y
-			
+		
+	#set scale to newScale, snapping if scaleSnaps are enabled	
 	def setScale(self,newScale):
-		print("old scale: " + str(self.scale))
-		print("new scale: " + str(newScale))
 		self.noSnapScale = max(newScale,0.05)
 		roundScale = roundBase(self.noSnapScale,5,2) if GM.scaleSnaps else self.noSnapScale
-		print("rounded scale: " + str(roundScale))
 		#do nothing if new scale is the same as old scale
 		if (roundScale != self.scale):
 			self.scale = roundScale			
@@ -81,17 +81,23 @@ class RoomObject(pygame.sprite.Sprite):
 			self.rect = self.image.get_rect()
 			self.rect.centerx = self.x
 			self.rect.centery = self.y
+			
+	#move to position x,y, snapping to grid if moveSnaps are enabled
+	def move(self,x,y):
+		self.noSnapX = x
+		self.noSnapY = y
+		roundX = roundBase(self.noSnapX,32) if GM.moveSnaps else self.noSnapX
+		roundY = roundBase(self.noSnapY,32) if GM.moveSnaps else self.noSnapY
+		self.rect.center = (roundX,roundY)
+		self.x,self.y = self.rect.center
 		
 	def update(self):
 		#if we are in follow mouse mode, don't do anything until we detect a leftclick
 		if (self.followMouse):
-			self.rect.center = GM.mouseX,GM.mouseY
+			self.move(GM.mouseX,GM.mouseY)
 			#exit follow mode when mouse is pressed	
 			if (GM.mousePressedLeft):
 				self.followMouse = False
-				#once we finish dragging, update x,y pos to rect pos
-				self.x = self.rect.centerx
-				self.y = self.rect.centery
 				#set selection to this object, now that we've placed it
 				GM.selection = [self]
 				GM.selectedThisPress = True
@@ -134,12 +140,9 @@ class RoomObject(pygame.sprite.Sprite):
 			
 		#scale when E is pressed if selected
 		if (self in GM.selection and GM.eDown):
-			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/100)
+			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/400)
 			
 		#if pressed, move with mouse
 		if (GM.dragging and self in GM.selection):
 			#get distance mouse moved since last frame, and update position accordingly
-			self.x += GM.mouseDx
-			self.y += GM.mouseDy
-			self.rect.centerx = self.x
-			self.rect.centery = self.y
+			self.move(self.noSnapX + GM.mouseDx, self.noSnapY + GM.mouseDy)

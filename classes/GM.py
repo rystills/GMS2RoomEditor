@@ -84,6 +84,7 @@ def init(screenWidthIn, screenHeightIn):
 	#store editor state related vars
 	this.angleSnaps = True
 	this.scaleSnaps = True
+	this.moveSnaps = True
 	
 #update mouse state variables
 def updateMouseVars():
@@ -178,13 +179,21 @@ def drawSelectionBox():
 			buffer = 5
 			selRect = sel.rect
 			pygame.draw.rect(this.screen,pygame.color.Color(255,0,0),
-							pygame.rect.Rect(selRect.left - buffer, selRect.top - buffer, selRect.width + 2*buffer, selRect.height + 2*buffer),2)
+							pygame.rect.Rect(selRect.left - buffer, selRect.top - buffer, 
+											selRect.width + 2*buffer, selRect.height + 2*buffer),2)
 		
 			#draw the current object rotation in small text
-			this.screen.blit(this.fontSmall.render(str(sel.rot),True,pygame.color.Color(0,255,0)),(selRect.left - buffer, selRect.top - buffer - 10))
+			this.screen.blit(this.fontSmall.render(str(sel.rot),True,pygame.color.Color(0,255,0)),
+							(selRect.left - buffer, selRect.top - buffer - 10))
 			
 			#draw the current object scale in small text
-			this.screen.blit(this.fontSmall.render(str(sel.scale),True,pygame.color.Color(0,255,255)),(selRect.left - buffer + 40, selRect.top - buffer - 10))
+			this.screen.blit(this.fontSmall.render(str(sel.scale),True,pygame.color.Color(0,255,255)),
+							(selRect.left - buffer + 40, selRect.top - buffer - 10))
+			
+			#draw the current object position in small text
+			this.screen.blit(this.fontSmall.render(str(sel.x) + ", " + str(sel.y),True,pygame.color.Color(255,0,255)),
+							(selRect.left - buffer, selRect.top - buffer - 25))
+			
 	
 #render all objects to the screen	
 def render():
