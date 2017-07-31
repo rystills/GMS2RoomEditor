@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE
+from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_d
 from layer import Layer
 import sys
 from util import *
@@ -73,12 +73,12 @@ def init(screenWidthIn, screenHeightIn):
 	
 #update mouse state variables
 def updateMouseVars():
-	#left mouse button down
+	#if the left mouse button is down, toggle it on and set pressed if this is the first frame
 	if (pygame.mouse.get_pressed()[0]):
 		this.mousePressedLeft = not this.mouseDownLeft
 		this.mouseDownLeft = True
 		this.mouseReleasedLeft = False
-	#left mouse button up
+	#if the left mouse button is up, toggle it off and set released if this is the first frame
 	else:
 		this.mouseReleasedLeft = this.mouseDownLeft
 		this.mouseDownLeft = False
@@ -95,10 +95,12 @@ def updateMouseVars():
 def updateKeyboardVars():
 	kp = pygame.key.get_pressed()
 	for i in range(len(kp)):
+		#if the key is down, toggle it on and set pressed if this is the first frame
 		if (kp[i]):
 			this.keysPressed[i] = not this.keysDown[i]
 			this.keysDown[i] = True
 			this.keysReleased[i] = False
+		#if the key is up, toggle it off and set released if this is the first frame
 		else:
 			this.keysReleased[i] = this.keysDown[i]
 			this.keysDown[i] = False
@@ -168,6 +170,14 @@ def updateSelection():
 		for obj in this.selection:
 			obj.kill()
 		this.selection = []
+		
+	#duplicate all selected objects when d is pressed, and place them in follow mouse mode
+	if (this.keysPressed[K_d]):
+		for obj in this.selection:
+			newObj = obj.clone()
+			newObj.followMouse = True
+			newObj.followXOffset = this.mouseX - newObj.x
+			newObj.followYOffset = this.mouseY - newObj.y
 
 #update all objects
 def updateObjects():

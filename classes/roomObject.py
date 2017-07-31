@@ -31,7 +31,10 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rect.centery = self.y
 		self.followMouse = False
 		self.pressed = False
-		print(self.imgHasAlpha)
+		
+		#offset when in follow mouse mode
+		self.followXOffset = 0
+		self.followYOffset = 0
 		
 	#set rotation to newRot, snapping if angleSnaps are enabled
 	def setRotation(self,newRot):
@@ -92,15 +95,21 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rect.center = (roundX,roundY)
 		self.x,self.y = self.rect.center
 		
+	#create and return clone of this object
+	def clone(self):
+		newObj = RoomObject(self.x,self.y,self.objType,self.rot,self.scale)
+		GM.roomObjects.add(newObj)
+		return newObj
+		
 	def update(self):
 		#if we are in follow mouse mode, don't do anything until we detect a leftclick
 		if (self.followMouse):
-			self.move(GM.mouseX,GM.mouseY)
+			self.move(GM.mouseX - self.followXOffset,GM.mouseY - self.followYOffset)
 			#exit follow mode when mouse is pressed	
 			if (GM.mousePressedLeft):
 				self.followMouse = False
 				#set selection to this object, now that we've placed it
-				GM.selection = [self]
+				GM.selection.append(self)
 				GM.selectedThisPress = True
 				GM.placingObject = False
 			return
