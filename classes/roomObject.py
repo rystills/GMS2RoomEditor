@@ -129,7 +129,10 @@ class RoomObject(pygame.sprite.Sprite):
 					self.pressed = False
 				#tell the game mamanger that a selection was just changed, so that it does not de-select us
 				GM.selectedThisPress = True
-					
+			
+			#if mouse is released, reset no snap position to snap position
+			else:
+				self.noSnapX,self.noSnapY = self.x,self.y	
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
@@ -137,10 +140,16 @@ class RoomObject(pygame.sprite.Sprite):
 		#rotate when R is pressed if selected
 		if (self in GM.selection and GM.rDown):
 			self.setRotation(self.noSnapRot + (GM.mouseDy- GM.mouseDx)/2)
+		#if R is released, set no snap rotation to snap rotation
+		else:
+			self.noSnapRot = self.rot
 			
 		#scale when E is pressed if selected
 		if (self in GM.selection and GM.eDown):
 			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/400)
+		#if E is released, set no snap scale to snap scale
+		else:
+			self.noSnapScale = self.scale
 			
 		#if pressed, move with mouse
 		if (GM.dragging and self in GM.selection):
