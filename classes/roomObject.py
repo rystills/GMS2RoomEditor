@@ -4,6 +4,7 @@ Created on Jul 28, 2017
 @author: Ryan
 '''
 import pygame
+from pygame.locals import *
 import GM
 from util import *
 
@@ -114,7 +115,7 @@ class RoomObject(pygame.sprite.Sprite):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft):
 				#remove from selection group if alt is pressed 
-				if (GM.altDown):
+				if (GM.keysDown[K_RALT] or GM.keysDown[K_LALT]):
 					self.pressed = False
 					if (self in GM.selection):
 						GM.selection.remove(self)
@@ -122,7 +123,7 @@ class RoomObject(pygame.sprite.Sprite):
 					self.pressed = True
 					GM.dragging = True
 					#add to selection group if control is pressed
-					if (GM.ctrlDown):
+					if (GM.keysDown[K_LCTRL] or GM.keysDown[K_RCTRL]):
 						if (not self in GM.selection):
 							GM.selection.append(self)
 					#neither alt nor control was pressed, so make this the only selected object if it isnt already selected
@@ -140,14 +141,14 @@ class RoomObject(pygame.sprite.Sprite):
 			self.noSnapX,self.noSnapY = self.x,self.y	
 			
 		#rotate when R is pressed if selected
-		if (self in GM.selection and GM.rDown):
+		if (self in GM.selection and GM.keysDown[K_r]):
 			self.setRotation(self.noSnapRot + (GM.mouseDy- GM.mouseDx)/2)
 		#if R is released, set no snap rotation to snap rotation
 		else:
 			self.noSnapRot = self.rot
 			
 		#scale when E is pressed if selected
-		if (self in GM.selection and GM.eDown):
+		if (self in GM.selection and GM.keysDown[K_e]):
 			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/400)
 		#if E is released, set no snap scale to snap scale
 		else:

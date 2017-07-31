@@ -1,8 +1,9 @@
 import pygame
-from pygame.locals import KEYDOWN, K_r, K_e, K_RCTRL, K_LCTRL, K_RALT, K_LALT, K_DELETE, QUIT, K_ESCAPE
+from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE
 from layer import Layer
 import sys
 from util import *
+from pygame.constants import K_DELETE
 #set 'this' to point to this module, so we can maintain module-wide globals
 this = sys.modules[__name__]
 
@@ -40,25 +41,9 @@ def init(screenWidthIn, screenHeightIn):
 	this.mouseDx = this.mouseDy = -1
 	
 	#init keyboard input vars
-	this.rPressed = False
-	this.rDown = False
-	this.rReleased = False
-	
-	this.ePressed = False
-	this.eDown = False
-	this.eReleased = False
-	
-	this.ctrlPressed = False
-	this.ctrlDown = False
-	this.ctrlReleased = False
-	
-	this.altPressed = False
-	this.altDown = False
-	this.altReleased = False
-	
-	this.deletePressed = False
-	this.deleteDown = False
-	this.deleteReleased = False
+	this.keysPressed = list(pygame.key.get_pressed())
+	this.keysDown = list(this.keysPressed)
+	this.keysReleased = list(this.keysPressed)
 	
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
@@ -108,61 +93,17 @@ def updateMouseVars():
 				
 #update keyboard state vars
 def updateKeyboardVars():
-	#r button down
-	if pygame.key.get_pressed()[K_r]:
-		this.rPressed = not this.rDown
-		this.rDown = True
-		this.rReleased = False
-	#r button up
-	else:
-		this.rReleased = this.rDown
-		this.rDown = False
-		this.rPressed = False
-		
-	#e button down
-	if pygame.key.get_pressed()[K_e]:
-		this.ePressed = not this.rDown
-		this.eDown = True
-		this.eReleased = False
-	#r button up
-	else:
-		this.eReleased = this.rDown
-		this.eDown = False
-		this.ePressed = False
-		
-	#ctrl button down
-	if (pygame.key.get_pressed()[K_RCTRL] or pygame.key.get_pressed()[K_LCTRL]):
-		this.ctrlPressed = not this.ctrlDown
-		this.ctrlDown = True
-		this.ctrlReleased = False
-	#ctrl button up
-	else:
-		this.ctrlReleased = this.ctrlDown
-		this.ctrlDown = False
-		this.ctrlPressed = False
-		
-	#alt button down
-	if (pygame.key.get_pressed()[K_RALT] or pygame.key.get_pressed()[K_LALT]):
-		this.altPressed = not this.altDown
-		this.altDown = True
-		this.altReleased = False
-	#alt  button up
-	else:
-		this.altReleased = this.altDown
-		this.altDown = False
-		this.altPressed = False
-		
-	#delete button down
-	if (pygame.key.get_pressed()[K_DELETE] or pygame.key.get_pressed()[K_DELETE]):
-		this.deletePressed = not this.deleteDown
-		this.deleteDown = True
-		this.deleteReleased = False
-	#delete button up
-	else:
-		this.deleteReleased = this.deleteDown
-		this.deleteDown = False
-		this.deletePressed = False
-				
+	kp = pygame.key.get_pressed()
+	for i in range(len(kp)):
+		if (kp[i]):
+			this.keysPressed[i] = not this.keysDown[i]
+			this.keysDown[i] = True
+			this.keysReleased[i] = False
+		else:
+			this.keysReleased[i] = this.keysDown[i]
+			this.keysDown[i] = False
+			this.keysPressed[i] = False
+
 #check if the user has pressed the escape key or the close button, and if so, quit
 def checkQuit():
 	for event in pygame.event.get():
@@ -173,7 +114,6 @@ def checkQuit():
 #draw a selection box around the currently selected object
 def drawSelectionBox():
 	if (len(this.selection) != 0):
-		print(this.selection)
 		for sel in this.selection:
 			#draw a rect surrounding the selected object
 			buffer = 5
@@ -224,7 +164,7 @@ def updateSelection():
 			this.selection = []
 	
 	#kill all selected objects when delete is pressed
-	if (this.deletePressed):
+	if (this.keysPressed[K_DELETE]):
 		for obj in this.selection:
 			obj.kill()
 		this.selection = []
