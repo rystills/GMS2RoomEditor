@@ -93,7 +93,7 @@ class RoomObject(pygame.sprite.Sprite):
 				self.x = self.rect.centerx
 				self.y = self.rect.centery
 				#set selection to this object, now that we've placed it
-				GM.selection = self
+				GM.selection = [self]
 				GM.selectedThisPress = True
 				GM.placingObject = False
 			return
@@ -114,15 +114,15 @@ class RoomObject(pygame.sprite.Sprite):
 		
 		#if mouse button was just released on us, trigger a press 
 		if (GM.mouseReleasedLeft and self.pressed):
-			GM.selection = self
+			GM.selection = [self]
 			self.pressed = False
 			
 		#rotate when R is pressed if selected
-		if (GM.selection == self and GM.rDown):
+		if (self in GM.selection and GM.rDown):
 			self.setRotation(self.noSnapRot + (GM.mouseDy- GM.mouseDx)/2)
 			
 		#scale when E is pressed if selected
-		if (GM.selection == self and GM.eDown):
+		if (self in GM.selection and GM.eDown):
 			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/100)
 			
 		#if pressed, move with mouse
