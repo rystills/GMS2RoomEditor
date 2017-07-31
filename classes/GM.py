@@ -69,6 +69,7 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#store vars relating to room object manipulation
 	this.selection = []
+	this.dragging = False
 	this.selectedThisPress = False
 	this.placingObject = False
 	
@@ -88,6 +89,7 @@ def updateMouseVars():
 		this.mouseReleasedLeft = this.mouseDownLeft
 		this.mouseDownLeft = False
 		this.mousePressedLeft = False
+		this.dragging = False
 				
 	#update mouse position and delta values
 	newMousePos = pygame.mouse.get_pos()

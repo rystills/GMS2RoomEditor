@@ -108,19 +108,19 @@ class RoomObject(pygame.sprite.Sprite):
 			#if mouse button was just pressed on us, toggle pressed on
 			if (GM.mousePressedLeft): 
 				self.pressed = True
+				GM.dragging = True
+				
+				if (GM.ctrlDown):
+					if (not self in GM.selection):
+						GM.selection.append(self)
+				elif (not self in GM.selection):
+					GM.selection = [self]
+				#tell the game mamanger that a selection was just changed, so that it does not de-select us
+				GM.selectedThisPress = True
+				self.pressed = False
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"
-		
-		#if mouse button was just released on us, trigger a press 
-		if (GM.mouseReleasedLeft and self.pressed):
-			if (GM.ctrlDown):
-				if (not self in GM.selection):
-					GM.selection.append(self)
-			else:
-				GM.selection = [self]
-			GM.selectedThisPress = True
-			self.pressed = False
 			
 		#rotate when R is pressed if selected
 		if (self in GM.selection and GM.rDown):
@@ -131,7 +131,7 @@ class RoomObject(pygame.sprite.Sprite):
 			self.setScale(self.noSnapScale + (GM.mouseDy- GM.mouseDx)/100)
 			
 		#if pressed, move with mouse
-		if (self.pressed):
+		if (GM.dragging and self in GM.selection):
 			#get distance mouse moved since last frame, and update position accordingly
 			self.x += GM.mouseDx
 			self.y += GM.mouseDy
