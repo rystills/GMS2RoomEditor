@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_d
+from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_LCTRL, K_RCTRL, K_a, K_d
 from layer import Layer
 import sys
 from util import *
@@ -178,6 +178,12 @@ def updateSelection():
 			newObj.followMouse = True
 			newObj.followXOffset = this.mouseX - newObj.x
 			newObj.followYOffset = this.mouseY - newObj.y
+			
+	#select all objects when ctrl + a is pressed
+	if ((this.keysDown[K_LCTRL] or this.keysDown[K_RCTRL]) and (this.keysDown[K_a])):
+		this.selection = []
+		for obj in this.roomObjects:
+			this.selection.append(obj)
 
 #update all objects
 def updateObjects():
