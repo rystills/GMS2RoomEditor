@@ -168,4 +168,4 @@ class RoomObject(pygame.sprite.Sprite):
 			#get distance mouse moved since last frame, and update position accordingly
 			self.move(self.noSnapX + GM.mouseDx, self.noSnapY + GM.mouseDy)
 			
-		print("x: " + str(self.x) + ", y: " + str(self.y) + " - nsx: " + str(self.noSnapX) + ", nsy: " + str(self.noSnapY))
+		#print("x: " + str(self.x) + ", y: " + str(self.y) + " - nsx: " + str(self.noSnapX) + ", nsy: " + str(self.noSnapY))

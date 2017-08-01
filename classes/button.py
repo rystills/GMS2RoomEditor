@@ -66,6 +66,8 @@ class Button(pygame.sprite.Sprite):
 			#if mouse button was just released on us, trigger a press 
 			if (GM.mouseReleasedLeft and self.pressed):
 				self.function(*self.args)
+				#tell the game mamanger not to change the current selection
+				GM.selectedThisPress = True
 			
 			#set state based off of pressed
 			self.state = "press" if self.pressed else "hover"

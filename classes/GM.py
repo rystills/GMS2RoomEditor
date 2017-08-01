@@ -35,6 +35,8 @@ def init(screenWidthIn, screenHeightIn):
 	this.mousePressedLeft = False
 	this.mouseDownLeft = False
 	this.mouseReleasedLeft = False
+	this.boxing = False
+	this.boxStartPos = None
 	
 	#init mouse pos vars
 	this.mouseX = this.mouseY = -1
@@ -73,23 +75,42 @@ def init(screenWidthIn, screenHeightIn):
 	
 #update mouse state variables
 def updateMouseVars():
+	#update mouse position and delta values
+	newMousePos = pygame.mouse.get_pos()
+	this.mouseDx = newMousePos[0] - this.mouseX
+	this.mouseDy = newMousePos[1] - this.mouseY
+	this.mouseX,this.mouseY = newMousePos
+	
 	#if the left mouse button is down, toggle it on and set pressed if this is the first frame
 	if (pygame.mouse.get_pressed()[0]):
 		this.mousePressedLeft = not this.mouseDownLeft
+		#only set box start pos on the frame when the mouse is first pressed down
+		if (this.mousePressedLeft):
+			this.boxStartPos = newMousePos
 		this.mouseDownLeft = True
 		this.mouseReleasedLeft = False
+		this.boxing = True
 	#if the left mouse button is up, toggle it off and set released if this is the first frame
 	else:
 		this.mouseReleasedLeft = this.mouseDownLeft
 		this.mouseDownLeft = False
 		this.mousePressedLeft = False
 		this.dragging = False
-				
-	#update mouse position and delta values
-	newMousePos = pygame.mouse.get_pos()
-	this.mouseDx = newMousePos[0] - this.mouseX
-	this.mouseDy = newMousePos[1] - this.mouseY
-	this.mouseX,this.mouseY = newMousePos
+
+#select all objects in the selectionBox
+def selectInBox():
+	#start by calculating the box dimensions from the start pos and current mouse pos
+	left = min(this.boxStartPos[0],this.mouseX)
+	top = min(this.boxStartPos[1],this.mouseY)
+	right = max(this.boxStartPos[0],this.mouseX)
+	bot = max(this.boxStartPos[1],this.mouseY)
+	#create a rect for our box
+	selectionRect = pygame.rect.Rect(left,top,right-left,bot-top)
+	print("left: " + str(left) + ", right: " + str(right) + ", widht: " + str(right-left) + ", height: " + str(bot-top))
+	#set our selection to all colliding objects
+	for obj in this.roomObjects:
+		if (obj.rect.colliderect(selectionRect)):
+			this.selection.append(obj)
 				
 #update keyboard state vars
 def updateKeyboardVars():
@@ -164,7 +185,10 @@ def updateSelection():
 			this.selectedThisPress = False
 		else:
 			this.selection = []
-	
+			if (this.boxing):
+				this.selectInBox()
+				this.boxing = False
+		
 	#kill all selected objects when delete is pressed
 	if (this.keysPressed[K_DELETE]):
 		for obj in this.selection:
