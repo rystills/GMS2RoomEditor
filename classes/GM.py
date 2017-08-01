@@ -37,6 +37,7 @@ def init(screenWidthIn, screenHeightIn):
 	this.mouseReleasedLeft = False
 	this.boxing = False
 	this.boxStartPos = None
+	this.selectionRect = None
 	
 	#init mouse pos vars
 	this.mouseX = this.mouseY = -1
@@ -86,30 +87,35 @@ def updateMouseVars():
 		this.mousePressedLeft = not this.mouseDownLeft
 		#only set box start pos on the frame when the mouse is first pressed down
 		if (this.mousePressedLeft):
+			this.boxing = True
 			this.boxStartPos = newMousePos
 		this.mouseDownLeft = True
 		this.mouseReleasedLeft = False
-		this.boxing = True
 	#if the left mouse button is up, toggle it off and set released if this is the first frame
 	else:
 		this.mouseReleasedLeft = this.mouseDownLeft
 		this.mouseDownLeft = False
 		this.mousePressedLeft = False
 		this.dragging = False
+		
+	this.updateSelectionRect()
+		
+#update the current selection rect, if it exists
+def updateSelectionRect():
+	if (this.boxing):
+		#start by calculating the box dimensions from the start pos and current mouse pos
+		left = min(this.boxStartPos[0],this.mouseX)
+		top = min(this.boxStartPos[1],this.mouseY)
+		right = max(this.boxStartPos[0],this.mouseX)
+		bot = max(this.boxStartPos[1],this.mouseY)
+		#create a rect for our box
+		this.selectionRect = pygame.rect.Rect(left,top,right-left,bot-top)
 
 #select all objects in the selectionBox
 def selectInBox():
-	#start by calculating the box dimensions from the start pos and current mouse pos
-	left = min(this.boxStartPos[0],this.mouseX)
-	top = min(this.boxStartPos[1],this.mouseY)
-	right = max(this.boxStartPos[0],this.mouseX)
-	bot = max(this.boxStartPos[1],this.mouseY)
-	#create a rect for our box
-	selectionRect = pygame.rect.Rect(left,top,right-left,bot-top)
-	print("left: " + str(left) + ", right: " + str(right) + ", widht: " + str(right-left) + ", height: " + str(bot-top))
 	#set our selection to all colliding objects
 	for obj in this.roomObjects:
-		if (obj.rect.colliderect(selectionRect)):
+		if (obj.rect.colliderect(this.selectionRect)):
 			this.selection.append(obj)
 				
 #update keyboard state vars
@@ -133,6 +139,17 @@ def checkQuit():
 		if (event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)):
 			this.running = False
 			return True
+	
+#if the user is actively creating a group selection rect, draw it
+def drawSelectionRect():
+	if (this.boxing):
+		#draw a semi-transparent background to the selection
+		seleBG = pygame.Surface((this.selectionRect.width,this.selectionRect.height))
+		seleBG.set_alpha(64)
+		seleBG.fill((0,255,0,))
+		this.screen.blit(seleBG,(this.selectionRect.x,this.selectionRect.y))
+		#draw the selection edges as a fully opague border line
+		pygame.draw.rect(this.screen,pygame.color.Color(0,255,0),this.selectionRect,1)
 	
 #draw a selection box around the currently selected object
 def drawSelectionBox():
@@ -173,7 +190,8 @@ def render():
 	this.roomObjects.draw(this.screen)
 	#draw selection box around selected object
 	this.drawSelectionBox()
-	
+	#if the user is actively creating a group selection rect, draw it
+	this.drawSelectionRect()
 	#push final screen render to the display	 
 	pygame.display.flip()
 
@@ -231,6 +249,9 @@ def tick():
 	this.updateMouseVars()
 	this.updateKeyboardVars()
 	this.updateObjects()
+	#if we just made a selection modification, don't start a selection box
+	if (this.selectedThisPress):
+		this.boxing = False
 	this.updateSelection()
 
 #delete all UI objects
