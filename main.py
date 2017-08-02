@@ -62,10 +62,12 @@ def openProject(projFile):
 	GM.roomsLayer.visible = True
 	GM.objectsLayer.visible = True
 	
-#open the specified room
+#open the specified room, hide the rooms panel, and open the layers panel
 def openRoom(rm):
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
-	#with open()
+	GM.activeRoom = rm
+	GM.roomsLayer.visible = False
+	GM.layersLayer.visible = True
 
 #select the specified object
 def selectObject(obj):

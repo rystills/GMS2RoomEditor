@@ -54,6 +54,8 @@ def init(screenWidthIn, screenHeightIn):
 	this.roomsLayer.visible = False
 	this.objectsLayer = Layer(1500,0,100,900,"Select Object")
 	this.objectsLayer.visible = False
+	this.layersLayer = Layer(0,0,100,900,"Select Layer")
+	this.layersLayer.visible = False
 	
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])
@@ -185,9 +187,11 @@ def render():
 	this.screen.fill((0,0,0))
 	#render layers
 	if (this.roomsLayer.visible):
-		print(this.roomsLayer.visible)
 		this.roomsLayer.render()
 		this.screen.blit(this.roomsLayer.image,this.roomsLayer.rect)
+	if (this.layersLayer.visible):
+		this.layersLayer.render()
+		this.screen.blit(this.layersLayer.image,this.layersLayer.rect)
 	if (this.objectsLayer.visible):
 		this.objectsLayer.render()
 		this.screen.blit(this.objectsLayer.image,this.objectsLayer.rect)
@@ -248,6 +252,7 @@ def updateObjects():
 		i.update()
 	#update rooms and objects lists
 	this.roomsLayer.update()
+	this.layersLayer.update()
 	this.objectsLayer.update()
 
 #update game
