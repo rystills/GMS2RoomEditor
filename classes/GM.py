@@ -51,7 +51,9 @@ def init(screenWidthIn, screenHeightIn):
 	#store object collections
 	this.objects = pygame.sprite.LayeredUpdates() 
 	this.roomsLayer = Layer(0,0,100,900,"Select Room")
+	this.roomsLayer.visible = False
 	this.objectsLayer = Layer(1500,0,100,900,"Select Object")
+	this.objectsLayer.visible = False
 	
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])
@@ -73,6 +75,9 @@ def init(screenWidthIn, screenHeightIn):
 	this.angleSnaps = True
 	this.scaleSnaps = True
 	this.moveSnaps = True
+	
+	#store current room related vars
+	this.activeRoom = None
 	
 #update mouse state variables
 def updateMouseVars():
@@ -174,20 +179,26 @@ def drawSelectionBox():
 			this.screen.blit(this.fontSmall.render(str(sel.x) + ", " + str(sel.y),True,pygame.color.Color(255,0,255)),
 							(selRect.left - buffer, selRect.top - buffer - 25))
 			
-	
 #render all objects to the screen	
 def render():
 	#render the solid color (black) background to prepare the screen for a fresh game render
 	this.screen.fill((0,0,0))
 	#render layers
-	this.roomsLayer.render()
-	this.screen.blit(this.roomsLayer.image,this.roomsLayer.rect)
-	this.objectsLayer.render()
-	this.screen.blit(this.objectsLayer.image,this.objectsLayer.rect)
+	if (this.roomsLayer.visible):
+		print(this.roomsLayer.visible)
+		this.roomsLayer.render()
+		this.screen.blit(this.roomsLayer.image,this.roomsLayer.rect)
+	if (this.objectsLayer.visible):
+		this.objectsLayer.render()
+		this.screen.blit(this.objectsLayer.image,this.objectsLayer.rect)
 	#render objects
-	this.objects.draw(this.screen)
+	for obj in this.objects:
+		if (obj.visible and (not obj.layer or obj.layer.visible)):
+			this.screen.blit(obj.image,obj.rect)
 	#render room objects
-	this.roomObjects.draw(this.screen)
+	for obj in this.roomObjects:
+		if (obj.visible and (not obj.layer or obj.layer.visible)):
+			this.screen.blit(obj.image,obj.rect)
 	#draw selection box around selected object
 	this.drawSelectionBox()
 	#if the user is actively creating a group selection rect, draw it

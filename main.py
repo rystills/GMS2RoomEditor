@@ -82,8 +82,6 @@ def main():
 	pygame.init()
 	#call GameManager setup
 	GM.init(240,120)
-	GM.roomsLayer.visible = False
-	GM.objectsLayer.visible = False
 	
 	#create load project button
 	GM.objects.add(Button("Load Project",GM.fontMedium, GM.screenWidth/2, GM.screenHeight/2 - 20, openProjectDirectory))

@@ -31,6 +31,7 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rect.centery = self.y
 		self.followMouse = False
 		self.pressed = False
+		self.visible = True
 		
 		#offset when in follow mouse mode
 		self.followXOffset = 0

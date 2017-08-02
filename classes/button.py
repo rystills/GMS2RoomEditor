@@ -21,6 +21,7 @@ class Button(pygame.sprite.Sprite):
 		self.color = pygame.Color(200,200,200,255)
 		self.pressed = False
 		self.layer = None
+		self.visible = True
 		#spr is the passed on sprite, if any
 		self.spr = sprite
 		#sprSize is the target dimension (width and height) that we will scale to
