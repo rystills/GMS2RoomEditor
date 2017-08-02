@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_LCTRL, K_RCTRL, K_a, K_d
+from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_LCTRL, K_RCTRL, K_a, K_d, K_q
 from layer import Layer
 import sys
 from util import *
@@ -241,6 +241,20 @@ def updateSelection():
 		this.selection = []
 		for obj in this.roomObjects:
 			this.selection.append(obj)
+			
+	#return one menu when q is pressed
+	if (this.keysPressed[K_q]):
+		this.returnMenu()	
+	
+#return from one menu
+def returnMenu():
+	if (this.layersLayer.visible):
+		this.layersLayer.visible = False
+		this.roomsLayer.visible = True
+	else:
+		this.roomsLayer.visible = False
+		this.objectsLayer.visible = False
+		initMainMenu()
 
 #update all objects
 def updateObjects():
