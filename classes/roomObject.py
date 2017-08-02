@@ -97,8 +97,11 @@ class RoomObject(pygame.sprite.Sprite):
 		
 	#create and return clone of this object
 	def clone(self):
-		newObj = RoomObject(self.x,self.y,self.objType,self.rot,self.scale)
+		#start rot at -1 so we can guaranteed override it to force update the image
+		newObj = RoomObject(self.x,self.y,self.objType,-1,self.scale)
 		GM.roomObjects.add(newObj)
+		#'set' other object's rotation now so that its image rotation and scale are updated
+		newObj.setRotation(self.rot)
 		return newObj
 		
 	def update(self):
