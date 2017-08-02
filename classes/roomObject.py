@@ -4,9 +4,9 @@ Created on Jul 28, 2017
 @author: Ryan
 '''
 import pygame
-from pygame.locals import *
+import util
 import GM
-from util import *
+from pygame.locals import K_e,K_d,K_r,K_RALT,K_LALT,K_RCTRL,K_LCTRL
 
 #class that represents an object present in the curretly selected room
 class RoomObject(pygame.sprite.Sprite):
@@ -22,7 +22,7 @@ class RoomObject(pygame.sprite.Sprite):
 		self.noSnapRot = self.rot
 		self.scale = scale
 		self.noSnapScale = self.scale
-		self.baseImage,self.imgHasAlpha = loadObjectSprite(self.objType)
+		self.baseImage,self.imgHasAlpha = util.loadObjectSprite(self.objType)
 		self.image = self.baseImage.copy()
 		self.rect = self.image.get_rect()
 		self.layer = None
@@ -40,7 +40,7 @@ class RoomObject(pygame.sprite.Sprite):
 	#set rotation to newRot, snapping if angleSnaps are enabled
 	def setRotation(self,newRot):
 		self.noSnapRot = newRot % 360
-		roundRot = roundBase(self.noSnapRot) % 360 if GM.angleSnaps else self.noSnapRot
+		roundRot = util.roundBase(self.noSnapRot) % 360 if GM.angleSnaps else self.noSnapRot
 		#do nothing if new rotation is the same as old rotation
 		if (roundRot != self.rot):
 			self.rot = roundRot
@@ -64,7 +64,7 @@ class RoomObject(pygame.sprite.Sprite):
 	#set scale to newScale, snapping if scaleSnaps are enabled	
 	def setScale(self,newScale):
 		self.noSnapScale = max(newScale,0.05)
-		roundScale = roundBase(self.noSnapScale,5,2) if GM.scaleSnaps else self.noSnapScale
+		roundScale = util.roundBase(self.noSnapScale,5,2) if GM.scaleSnaps else self.noSnapScale
 		#do nothing if new scale is the same as old scale
 		if (roundScale != self.scale):
 			self.scale = roundScale			
@@ -91,8 +91,8 @@ class RoomObject(pygame.sprite.Sprite):
 	def move(self,x,y):
 		self.noSnapX = x
 		self.noSnapY = y
-		roundX = roundBase(self.noSnapX,32) if GM.moveSnaps else self.noSnapX
-		roundY = roundBase(self.noSnapY,32) if GM.moveSnaps else self.noSnapY
+		roundX = util.roundBase(self.noSnapX,32) if GM.moveSnaps else self.noSnapX
+		roundY = util.roundBase(self.noSnapY,32) if GM.moveSnaps else self.noSnapY
 		self.rect.center = (roundX,roundY)
 		self.x,self.y = self.rect.center
 		

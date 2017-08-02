@@ -1,9 +1,10 @@
 import pygame
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_LCTRL, K_RCTRL, K_a, K_d, K_q
 from layer import Layer
-import sys
-from util import *
+import sys, os
+import util
 from pygame.constants import K_DELETE
+
 #set 'this' to point to this module, so we can maintain module-wide globals
 this = sys.modules[__name__]
 
@@ -65,7 +66,7 @@ def init(screenWidthIn, screenHeightIn):
 	this.roomObjects = pygame.sprite.LayeredUpdates()
 	
 	#load image for objects with no sprite
-	this.noSpriteImg = loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
+	this.noSpriteImg = util.loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
 	
 	#store vars relating to room object manipulation
 	this.selection = []
@@ -254,7 +255,7 @@ def returnMenu():
 	else:
 		this.roomsLayer.visible = False
 		this.objectsLayer.visible = False
-		initMainMenu()
+		util.initMainMenu()
 
 #update all objects
 def updateObjects():

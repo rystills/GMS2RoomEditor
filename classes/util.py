@@ -6,32 +6,12 @@ from button import Button
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 from roomObject import RoomObject
+import json
 
-#get all contents of the specified file, stripped of newlines, and return it as a strong
-def getFileContents(fName):
-	fileString = ""
-	with open(fName, "rt") as f:
-		for line in f:
-			fileString += line.strip()
-	return fileString
-
-#get a specific value from a parsed file string
-def getFileVal(fStr, val):
-	#first get start index
-	startInd = fStr.find(val)
-	#next get index of first : after that
-	colInd = fStr.find(":",startInd)
-	#finally, get the index of the next comma
-	commaInd = fStr.find(",",colInd)
-	#if there was no next comma, this index should be set to the end of the string
-	if (commaInd == -1):
-		commaInd = len(fStr)-1
-		
-	#now get the string from 1 past the colon, up to but not including the next comma or end of file
-	newStr = fStr[colInd+1:commaInd]
-	
-	#finally, strip off whitespace, commas, and double quotation marks
-	return newStr.strip().strip(",").strip('"')
+#get a specific value from a file reference
+def getFileVal(inFile, val):
+	with open(inFile) as f:
+		return json.load(f)[val]
 
 #search all sprite images in the project to locate the sprite image corresponding to the input image id
 def findSpriteImageById(imgId):
@@ -42,6 +22,7 @@ def findSpriteImageById(imgId):
 		fName = next(file for file in os.listdir(os.path.join(GM.sprDir,spr)) if file.endswith(".png"))
 		if (fName[:-4] == imgId):
 			return fName
+	return None
 		
 #prepare the main menu window size and buttons
 def initMainMenu():
@@ -112,8 +93,7 @@ def openRoom(rm):
 #select the specified object
 def selectObject(obj):
 	print("selected object: " + obj)
-	mousePos = pygame.mouse.get_pos()
-	newObj = RoomObject(mousePos[0],mousePos[1],obj, 0,1)
+	newObj = RoomObject(GM.mouseX,GM.mouseY,obj, 0,1)
 	newObj.followMouse = True
 	GM.roomObjects.add(newObj)
 	GM.placingObject = True
@@ -126,11 +106,11 @@ def findSpriteById(sprId):
 		sprFile = os.path.join(os.path.join(GM.sprDir,spr),spr + ".yy")
 		print("opening sprite: " + sprFile)
 		#check if this sprite's id matches the desired sprite id
-		fStr = getFileContents(sprFile)
-		imgId = getFileVal(fStr,"id")
+		imgId = getFileVal(sprFile,"id")
 		if (imgId == sprId):
 			print ("located sprite -- name: " + spr)
 			return spr
+	return None
 		
 #return the sprite image file corresponding to the input sprite name
 def getSpriteImage(sprName):
@@ -175,8 +155,7 @@ def loadObjectSprite(obj):
 	#read the object file to get its sprite id
 	objFile = os.path.join(os.path.join(GM.objDir,obj),obj + ".yy")
 	print("opening object: " + objFile)
-	fStr = getFileContents(objFile)
-	sprId = getFileVal(fStr,"spriteId")
+	sprId = getFileVal(objFile,"spriteId")
 	print("sprite id: " + sprId)
 	#in the case of an object with no sprite, return the default sprite
 	if (sprId == "00000000-0000-0000-0000-000000000000"):

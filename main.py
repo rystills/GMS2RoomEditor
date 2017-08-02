@@ -1,9 +1,10 @@
 #Import Modules
 import sys
 #add class dir to path so we can import classes freely
-sys.path.insert(0,"classes")
+sys.path.insert(1,"classes")
 import GM
-from util import *
+import pygame
+import util
 
 #main function: init game, then run the core game loop
 def main():
@@ -12,7 +13,7 @@ def main():
 	#call GameManager setup
 	GM.init(1,1)
 	
-	initMainMenu()
+	util.initMainMenu()
 	
 	#Main Loop; runs until game is exited
 	while GM.running:
