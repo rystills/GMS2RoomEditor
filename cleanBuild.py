@@ -1,16 +1,14 @@
-import zipfile
 import os
 import fnmatch
 import compileall
-#import shutil
 
 projectName = "GMS2 Room Editor"
 #change default build folder name to project name
 os.rename(os.path.join(os.path.join(os.getcwd(),"build"),"exe.win32-3.2"), os.path.join(os.path.join(os.getcwd(),"build"),projectName))
 
-#replace all .py files with compiled pyc files to speed up execution and reduce file size
+#replace all .py files with pre-compiled pyc files to speed up execution and reduce build size
 for root, dirnames, filenames in os.walk(os.path.join("build",projectName)):
-	for filename in fnmatch.filter(filenames, '*.py'): #replace all .py files with pre-compiled .pyc files
+	for filename in fnmatch.filter(filenames, '*.py'):
 		curFile = os.path.join(root, filename)
 		compileall.compile_file(curFile)
 		os.remove(curFile)

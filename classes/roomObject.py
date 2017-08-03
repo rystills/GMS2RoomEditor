@@ -6,7 +6,7 @@ Created on Jul 28, 2017
 import pygame
 import util
 import GM
-from pygame.locals import K_e,K_d,K_r,K_RALT,K_LALT,K_RCTRL,K_LCTRL
+from pygame.locals import K_e,K_r,K_RALT,K_LALT,K_RCTRL,K_LCTRL
 
 #class that represents an object present in the curretly selected room
 class RoomObject(pygame.sprite.Sprite):

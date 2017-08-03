@@ -3,7 +3,6 @@ from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_DELETE, K_LCTRL, K_RCTRL, K
 from layer import Layer
 import sys, os
 import util
-from pygame.constants import K_DELETE
 
 #set 'this' to point to this module, so we can maintain module-wide globals
 this = sys.modules[__name__]
