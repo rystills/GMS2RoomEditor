@@ -37,8 +37,9 @@ class Layer():
 		
 	#delete all objects contained in this layer
 	def empty(self):
-		while (len(self.containedObjects) > 0):
-			self.containedObjects[0].kill()
+		sprites = self.containedObjects.sprites()
+		for spr in sprites:
+			spr.kill()
 		
 	#adjust this layer's scrollbar so that its size and scroll bounds match the extents of the contained objects
 	def resizeScrollbar(self):

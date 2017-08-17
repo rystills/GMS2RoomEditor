@@ -109,6 +109,7 @@ def populateLayers():
 	#add each layer name to the layer list
 	for i in range(len(layerNames)):
 		GM.layersLayer.add(Button(layerNames[i],GM.fontSmall,2,45*i,openRoom,[layerNames[i]],"left"))
+	GM.activeLayer = layerNames[0]
 	
 #select the specified object
 def selectObject(obj):

@@ -80,6 +80,7 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#store current room related vars
 	this.activeRoom = None
+	this.activeLayer = None
 	
 #update mouse state variables
 def updateMouseVars():
