@@ -61,9 +61,8 @@ def openProject(projFile):
 		objSpr,hasAlpha = loadObjectSprite(objList[i])
 		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,90*i,selectObject,[objList[i]],"left",objSpr,hasAlpha))
 		
-	#show rooms and objects layers
+	#show rooms layer
 	GM.roomsLayer.visible = True
-	GM.objectsLayer.visible = True
 	
 #store a local reference to the last used project for future use
 def writeLastUsedProject(projName):
@@ -88,6 +87,7 @@ def openRoom(rm):
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
 	GM.activeRoom = rm
 	GM.roomsLayer.visible = False
+	GM.objectsLayer.visible = True
 	GM.layersLayer.visible = True
 	populateLayers()
 
@@ -108,9 +108,15 @@ def populateLayers():
 	
 	#add each layer name to the layer list
 	for i in range(len(layerNames)):
-		GM.layersLayer.add(Button(layerNames[i],GM.fontSmall,2,45*i,openRoom,[layerNames[i]],"left"))
+		GM.layersLayer.add(Button(layerNames[i],GM.fontSmall,2,45*i,selectLayer,[layerNames[i]],"left"))
+		
+	#set the active layer to the first layer by default
 	GM.activeLayer = layerNames[0]
 	
+#select the input layer
+def selectLayer(layer):
+	GM.activeLayer = layer
+
 #select the specified object
 def selectObject(obj):
 	print("selected object: " + obj)

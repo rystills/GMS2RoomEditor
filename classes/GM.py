@@ -251,12 +251,12 @@ def updateSelection():
 #return from one menu
 def returnMenu():
 	if (this.layersLayer.visible):
-		this.layersLayer.visible = False
 		this.roomsLayer.visible = True
 	else:
 		this.roomsLayer.visible = False
-		this.objectsLayer.visible = False
 		util.initMainMenu()
+	this.layersLayer.visible = False
+	this.objectsLayer.visible = False
 
 #update all objects
 def updateObjects():
