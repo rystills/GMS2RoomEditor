@@ -8,7 +8,7 @@ from tkinter.filedialog import askopenfilename
 from roomObject import RoomObject
 import json
 
-#get a specific value from a file reference
+#get the value of val in the file located at filepath inFile
 def getFileVal(inFile, val):
 	with open(inFile) as f:
 		return json.load(f)[val]
@@ -89,7 +89,27 @@ def openRoom(rm):
 	GM.activeRoom = rm
 	GM.roomsLayer.visible = False
 	GM.layersLayer.visible = True
+	populateLayers()
 
+#clear and re-populate the list of layers depending on the active room
+def populateLayers():
+	#clear all pre-existing layers
+	GM.layersLayer.empty()
+	
+	#locate the file corresponding to the currently active room
+	rmFile = os.path.join(os.path.join(GM.rmDir,GM.activeRoom),GM.activeRoom + ".yy")
+	
+	#grab the list of layers from the JSON dict
+	print("loading layers from room: " + rmFile)
+	JSONLayers = getFileVal(rmFile,"layers")
+	
+	#append the layer ids to a new list
+	layerNames = [layer["name"] for layer in JSONLayers]
+	
+	#add each layer name to the layer list
+	for i in range(len(layerNames)):
+		GM.layersLayer.add(Button(layerNames[i],GM.fontSmall,2,45*i,openRoom,[layerNames[i]],"left"))
+	
 #select the specified object
 def selectObject(obj):
 	print("selected object: " + obj)

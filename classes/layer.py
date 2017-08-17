@@ -35,6 +35,11 @@ class Layer():
 		obj.layer = self
 		self.resizeScrollbar()
 		
+	#delete all objects contained in this layer
+	def empty(self):
+		while (len(self.containedObjects) > 0):
+			self.containedObjects[0].kill()
+		
 	#adjust this layer's scrollbar so that its size and scroll bounds match the extents of the contained objects
 	def resizeScrollbar(self):
 		#first find the highest and lowest objects

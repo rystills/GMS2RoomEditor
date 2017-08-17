@@ -229,7 +229,8 @@ def updateSelection():
 		this.selection = []
 		
 	#duplicate all selected objects when d is pressed, and place them in follow mouse mode
-	if (this.keysPressed[K_d]):
+	if (this.keysPressed[K_d] and not this.placingObject):
+		this.placingObject = True
 		for obj in this.selection:
 			newObj = obj.clone()
 			newObj.followMouse = True
