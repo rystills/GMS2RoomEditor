@@ -77,6 +77,7 @@ def init(screenWidthIn, screenHeightIn):
 	this.angleSnaps = True
 	this.scaleSnaps = True
 	this.moveSnaps = True
+	this.gridX = this.gridY = 1
 	
 	#store current room related vars
 	this.activeRoom = None

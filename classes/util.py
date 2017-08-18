@@ -113,6 +113,15 @@ def populateLayers():
 	#set the active layer to the first layer by default
 	GM.activeGMSLayer = layerNames[0]
 	
+	#update grid x,y movement snap values
+	updateGridMoveSnaps(JSONLayers[0])
+	
+#update GM grid movement snaps to movement snaps in the input JSON layers
+def updateGridMoveSnaps(JSONLayer):
+	GM.gridX = int(JSONLayer["grid_x"])
+	GM.gridY = int(JSONLayer["grid_y"])
+	print("gridX: " + str(GM.gridX) + ", gridY: " + str(GM.gridY))
+	
 #select the input layer
 def selectLayer(layer):
 	#do nothing if the desired layer is already selected
@@ -120,6 +129,18 @@ def selectLayer(layer):
 		GM.activeGMSLayer = layer
 		#deselect all objects when switching layers
 		GM.selection = []
+		
+		#update grid x,y movement snap values
+		#locate the file corresponding to the currently active room
+		rmFile = os.path.join(os.path.join(GM.rmDir,GM.activeRoom),GM.activeRoom + ".yy")
+		
+		#grab the list of layers from the JSON dict
+		JSONLayers = getFileVal(rmFile,"layers")
+		
+		#find the layer corresponding to the active layer name
+		for layer in JSONLayers:
+			if (layer["name"] == GM.activeGMSLayer):
+				return updateGridMoveSnaps(layer)	
 
 #select the specified object
 def selectObject(obj):

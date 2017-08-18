@@ -93,8 +93,8 @@ class RoomObject(pygame.sprite.Sprite):
 	def move(self,x,y):
 		self.noSnapX = x
 		self.noSnapY = y
-		roundX = util.roundBase(self.noSnapX,32) if GM.moveSnaps else self.noSnapX
-		roundY = util.roundBase(self.noSnapY,32) if GM.moveSnaps else self.noSnapY
+		roundX = util.roundBase(self.noSnapX,GM.gridX) if GM.moveSnaps else self.noSnapX
+		roundY = util.roundBase(self.noSnapY,GM.gridY) if GM.moveSnaps else self.noSnapY
 		self.rect.center = (roundX,roundY)
 		self.x,self.y = self.rect.center
 		
