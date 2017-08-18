@@ -111,11 +111,15 @@ def populateLayers():
 		GM.layersLayer.add(Button(layerNames[i],GM.fontSmall,2,45*i,selectLayer,[layerNames[i]],"left"))
 		
 	#set the active layer to the first layer by default
-	GM.activeLayer = layerNames[0]
+	GM.activeGMSLayer = layerNames[0]
 	
 #select the input layer
 def selectLayer(layer):
-	GM.activeLayer = layer
+	#do nothing if the desired layer is already selected
+	if (not GM.activeGMSLayer == layer):
+		GM.activeGMSLayer = layer
+		#deselect all objects when switching layers
+		GM.selection = []
 
 #select the specified object
 def selectObject(obj):

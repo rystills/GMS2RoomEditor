@@ -80,7 +80,7 @@ def init(screenWidthIn, screenHeightIn):
 	
 	#store current room related vars
 	this.activeRoom = None
-	this.activeLayer = None
+	this.activeGMSLayer = None
 	
 #update mouse state variables
 def updateMouseVars():
@@ -119,11 +119,24 @@ def updateSelectionRect():
 		#create a rect for our box
 		this.selectionRect = pygame.rect.Rect(left,top,right-left,bot-top)
 
+#return whether or not the input object is on an active GMS or editor layer
+def objectLayerActive(obj):
+	#if the object has no layer, then it is always active
+	if (not obj.layer):
+		return True
+	
+	#if the object layer is a GMS layer, test it against the active layer string
+	if (type(obj.layer) is str):
+		return obj.layer == this.activeGMSLayer
+	
+	#if the object layer is an editor layer, check if it is visible
+	return (obj.layer.visible)
+
 #select all objects in the selectionBox
 def selectInBox():
 	#set our selection to all colliding objects
 	for obj in this.roomObjects:
-		if (obj.rect.colliderect(this.selectionRect)):
+		if ((objectLayerActive(obj)) and obj.rect.colliderect(this.selectionRect)):
 			this.selection.append(obj)
 				
 #update keyboard state vars
@@ -198,11 +211,11 @@ def render():
 		this.screen.blit(this.objectsLayer.image,this.objectsLayer.rect)
 	#render objects
 	for obj in this.objects:
-		if (obj.visible and (not obj.layer or obj.layer.visible)):
+		if (obj.visible and objectLayerActive(obj)):
 			this.screen.blit(obj.image,obj.rect)
 	#render room objects
 	for obj in this.roomObjects:
-		if (obj.visible and (not obj.layer or obj.layer.visible)):
+		if (obj.visible and objectLayerActive(obj)):
 			this.screen.blit(obj.image,obj.rect)
 	#draw selection box around selected object
 	this.drawSelectionBox()
@@ -257,6 +270,10 @@ def returnMenu():
 		util.initMainMenu()
 	this.layersLayer.visible = False
 	this.objectsLayer.visible = False
+	
+	#reset the selection and active layer when changing menues
+	this.selection = []
+	this.activeGMSLayer = None
 
 #update all objects
 def updateObjects():

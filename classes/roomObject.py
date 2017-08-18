@@ -25,7 +25,8 @@ class RoomObject(pygame.sprite.Sprite):
 		self.baseImage,self.imgHasAlpha = util.loadObjectSprite(self.objType)
 		self.image = self.baseImage.copy()
 		self.rect = self.image.get_rect()
-		self.layer = None
+		#room objects use a GMSLayer rather than an Editor layer
+		self.layer = GM.activeGMSLayer
 		#move our image to be centered at our x,y pos
 		self.rect.centerx = self.x
 		self.rect.centery = self.y
