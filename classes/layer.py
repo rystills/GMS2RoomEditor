@@ -8,7 +8,7 @@ import GM
 
 #simple class that stores and renders a group of objects
 class Layer():
-	def __init__(self,x,y,width,height,title="",scrollbarPos = "right"):
+	def __init__(self,x,y,width,height,title = "",scrollbarPos = "right",clearColor = (0,0,50)):
 		self.image = pygame.surface.Surface((width,height))
 		self.rect = self.image.get_rect()
 		self.rect.topleft = (x,y)
@@ -28,6 +28,7 @@ class Layer():
 		#effective height of the viewable area, after we subtract the title offset (if any)
 		self.viewHeight = self.image.get_height() - self.titleOffset
 		self.visible = True
+		self.clearColor = clearColor
 	
 	#add the input object to this layer
 	def add(self,obj):
@@ -62,7 +63,7 @@ class Layer():
 		if (not self.visible):
 			return
 		#clear view area to black
-		self.image.fill((0,0,50))
+		self.image.fill(self.clearColor)
 		
 		#draw all objects
 		scrollDistance = self.scrollY * self.scrollHeightDiff

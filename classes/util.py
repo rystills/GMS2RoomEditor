@@ -53,16 +53,23 @@ def openProject(projFile):
 	#create a button for each room
 	rmList = (next(os.walk(GM.rmDir))[1])
 	for i in range(len(rmList)):
-		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,2,45*i,openRoom,[rmList[i]],"left"))
+		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,2,2 + 45*i,openRoom,[rmList[i]],"left"))
 		
 	#create a button for each object
 	objList = (next(os.walk(GM.objDir))[1])
 	for i in range(len(objList)):
 		objSpr,hasAlpha = loadObjectSprite(objList[i])
-		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,90*i,selectObject,[objList[i]],"left",objSpr,hasAlpha))
+		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,2 + 90*i,selectObject,[objList[i]],"left",objSpr,hasAlpha))
+		
+	#create room editor UI buttons
+	GM.editorUILayer.add(Button("Discard Room Changes", GM.fontSmall,2,2,discardRoomChanges,[],"left"))
 		
 	#show rooms layer
 	GM.roomsLayer.visible = True
+	
+#discard all changes, reverting the current room to its original state
+def discardRoomChanges():
+	pass
 	
 #store a local reference to the last used project for future use
 def writeLastUsedProject(projName):
@@ -87,6 +94,7 @@ def openRoom(rm):
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
 	GM.activeRoom = rm
 	GM.roomsLayer.visible = False
+	GM.editorUILayer.visible = True
 	GM.objectsLayer.visible = True
 	GM.layersLayer.visible = True
 	populateLayers()
