@@ -59,7 +59,7 @@ def init(screenWidthIn, screenHeightIn):
 	this.editorUILayer = Layer(100,0,1400,20)
 	this.editorUILayer.clearColor = (0,50,0)
 	this.editorUILayer.visible = False
-	this.GMSRoomLayer = Layer(100,100,1500,800)
+	this.GMSRoomLayer = Layer(100,20,1400,880)
 	this.GMSRoomLayer.clearColor = (0,0,0)
 	this.GMSRoomLayer.visible = False
 	
@@ -256,7 +256,9 @@ def updateSelection():
 	if ((this.keysDown[K_LCTRL] or this.keysDown[K_RCTRL]) and (this.keysDown[K_a])):
 		this.selection = []
 		for obj in this.GMSObjects:
-			this.selection.append(obj)
+			#ignore objects that are not in an active layer
+			if (util.objectLayerActive(obj)):
+				this.selection.append(obj)
 			
 	#return one menu when q is pressed
 	if (this.keysPressed[K_q]):
