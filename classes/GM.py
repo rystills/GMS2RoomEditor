@@ -59,6 +59,9 @@ def init(screenWidthIn, screenHeightIn):
 	this.editorUILayer = Layer(100,0,1400,20)
 	this.editorUILayer.clearColor = (0,50,0)
 	this.editorUILayer.visible = False
+	this.GMSRoomLayer = Layer(100,100,1500,800)
+	this.GMSRoomLayer.clearColor = (0,0,0)
+	this.GMSRoomLayer.visible = False
 	
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])
@@ -203,6 +206,9 @@ def render():
 	if (this.editorUILayer.visible):
 		this.editorUILayer.render()
 		this.screen.blit(this.editorUILayer.image,this.editorUILayer.rect)
+	if (this.GMSRoomLayer.visible):
+		this.GMSRoomLayer.render()
+		this.screen.blit(this.GMSRoomLayer.image,this.GMSRoomLayer.rect)
 	
 	#render objects
 	for obj in this.objects:
@@ -266,6 +272,7 @@ def returnMenu():
 	this.layersLayer.visible = False
 	this.objectsLayer.visible = False
 	this.editorUILayer.visible = False
+	this.GMSRoomLayer.visible = False
 	
 	#reset the selection and active layer when changing menues
 	this.selection = []
@@ -283,6 +290,7 @@ def updateObjects():
 	this.roomsLayer.update()
 	this.layersLayer.update()
 	this.editorUILayer.update()
+	this.GMSRoomLayer.update()
 	this.objectsLayer.update()
 
 #update game

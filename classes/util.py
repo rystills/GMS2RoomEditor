@@ -70,6 +70,12 @@ def openProject(projFile):
 	
 #discard all changes, reverting the current room to its original state
 def discardRoomChanges():
+	#kill any existing room objects
+	sprites = GM.GMSObjects.sprites()
+	for spr in sprites:
+		spr.kill()
+	
+	#reload the room
 	openRoom(GM.activeRoom)
 	
 #store a local reference to the last used project for future use
@@ -104,10 +110,6 @@ def openProjectDirectory():
 	
 #open the specified room, hide the rooms panel, and open the layers panel
 def openRoom(rm):
-	#kill any existing room objects
-	sprites = GM.GMSObjects.sprites()
-	for spr in sprites:
-		spr.kill()
 	GM.selection = []
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
 	GM.activeRoom = rm
@@ -115,6 +117,7 @@ def openRoom(rm):
 	GM.editorUILayer.visible = True
 	GM.objectsLayer.visible = True
 	GM.layersLayer.visible = True
+	GM.GMSRoomLayer.visible = True
 	populateLayers()
 
 #clear and re-populate the list of layers depending on the active room
@@ -171,7 +174,7 @@ def selectLayer(layer):
 #select the specified object
 def selectObject(obj):
 	print("selected object: " + obj)
-	newObj = GMSObject(GM.mouseX,GM.mouseY,obj, 0,1)
+	newObj = GMSObject(GM.mouseX,GM.mouseY,obj, GM.GMSRoomLayer,0,1)
 	newObj.followMouse = True
 	GM.GMSObjects.add(newObj)
 	GM.placingObject = True
