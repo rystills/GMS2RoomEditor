@@ -9,8 +9,8 @@ import GM
 from pygame.locals import K_e,K_r,K_RALT,K_LALT,K_RCTRL,K_LCTRL
 
 #class that represents an object present in the curretly selected room
-class RoomObject(pygame.sprite.Sprite):
-	def __init__(self,x,y,objType,rot=0,scale=1):
+class GMSObject(pygame.sprite.Sprite):
+	def __init__(self,x,y,objType,rot=0,scale=1,layer=None):
 		pygame.sprite.Sprite.__init__(self)
 		#store basic properties about the object we represent in the ecurrent room
 		self.x = x
@@ -27,7 +27,8 @@ class RoomObject(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		#room objects use a GMSLayer rather than an Editor layer
 		self.room = GM.activeRoom
-		self.layer = GM.activeGMSLayer
+		self.layer = layer
+		self.GMSLayer = GM.activeGMSLayer
 		#move our image to be centered at our x,y pos
 		self.rect.centerx = self.x
 		self.rect.centery = self.y
@@ -101,8 +102,8 @@ class RoomObject(pygame.sprite.Sprite):
 	#create and return clone of this object
 	def clone(self):
 		#start rot at -1 so we can guaranteed override it to force update the image
-		newObj = RoomObject(self.x,self.y,self.objType,-1,self.scale)
-		GM.roomObjects.add(newObj)
+		newObj = GMSObject(self.x,self.y,self.objType,-1,self.scale)
+		GM.GMSObjects.add(newObj)
 		#'set' other object's rotation now so that its image rotation and scale are updated
 		newObj.setRotation(self.rot)
 		return newObj

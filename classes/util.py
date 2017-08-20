@@ -5,7 +5,7 @@ import GM
 from button import Button
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-from roomObject import RoomObject
+from GMSObject import GMSObject
 import json
 
 #get the value of val in the file located at filepath inFile
@@ -63,6 +63,7 @@ def openProject(projFile):
 		
 	#create room editor UI buttons
 	GM.editorUILayer.add(Button("Discard Room Changes", GM.fontSmall,2,2,discardRoomChanges,[],"left"))
+	GM.editorUILayer.add(Button("Save Room Changes", GM.fontSmall,202,2,discardRoomChanges,[],"left"))
 		
 	#show rooms layer
 	GM.roomsLayer.visible = True
@@ -83,16 +84,11 @@ def objectRoomActive(obj):
 		
 #return whether or not the input object is on an active GMS or editor layer
 def objectLayerActive(obj):
-	#if the object has no layer, then it is always active
-	if (not obj.layer):
-		return objectRoomActive(obj)
-	
-	#if the object layer is a GMS layer, test it against the active layer string
-	if (type(obj.layer) is str):
-		return objectRoomActive(obj) if obj.layer == GM.activeGMSLayer else False
-	
-	#if the object layer is an editor layer, check if it is visible
-	return objectRoomActive(obj) if obj.layer.visible else False
+	#check if the object is on an active layer
+	activeLayer = (not obj.layer) or obj.layer.visible
+	#check if the object is on an active GMS layer
+	activeGMSLayer = (not hasattr(obj, "GMSLayer")) or (obj.GMSLayer == GM.activeGMSLayer)
+	return objectRoomActive(obj) if (activeLayer and activeGMSLayer) else False
 			
 #open a file dialog box for the user to locate and select their desired GameMaker Studio 2 project
 def openProjectDirectory():
@@ -109,7 +105,7 @@ def openProjectDirectory():
 #open the specified room, hide the rooms panel, and open the layers panel
 def openRoom(rm):
 	#kill any existing room objects
-	sprites = GM.roomObjects.sprites()
+	sprites = GM.GMSObjects.sprites()
 	for spr in sprites:
 		spr.kill()
 	GM.selection = []
@@ -175,9 +171,9 @@ def selectLayer(layer):
 #select the specified object
 def selectObject(obj):
 	print("selected object: " + obj)
-	newObj = RoomObject(GM.mouseX,GM.mouseY,obj, 0,1)
+	newObj = GMSObject(GM.mouseX,GM.mouseY,obj, 0,1)
 	newObj.followMouse = True
-	GM.roomObjects.add(newObj)
+	GM.GMSObjects.add(newObj)
 	GM.placingObject = True
 		
 #search all sprites in the project to locate the sprite name corresponding to the input sprite id

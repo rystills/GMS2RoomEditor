@@ -65,7 +65,7 @@ def init(screenWidthIn, screenHeightIn):
 	pygame.display.set_caption("Room Editor")
 	
 	#store room objects
-	this.roomObjects = pygame.sprite.LayeredUpdates()
+	this.GMSObjects = pygame.sprite.LayeredUpdates()
 	
 	#load image for objects with no sprite
 	this.noSpriteImg = util.loadImage(os.path.join(this.rootImgDir,"noSprite.png"), True)
@@ -126,7 +126,7 @@ def updateSelectionRect():
 #select all objects in the selectionBox
 def selectInBox():
 	#set our selection to all colliding objects
-	for obj in this.roomObjects:
+	for obj in this.GMSObjects:
 		if ((util.objectLayerActive(obj)) and obj.rect.colliderect(this.selectionRect)):
 			this.selection.append(obj)
 				
@@ -209,7 +209,7 @@ def render():
 		if (obj.visible and util.objectLayerActive(obj)):
 			this.screen.blit(obj.image,obj.rect)
 	#render room objects
-	for obj in this.roomObjects:
+	for obj in this.GMSObjects:
 		if (obj.visible and util.objectLayerActive(obj)):
 			this.screen.blit(obj.image,obj.rect)
 	#draw selection box around selected object
@@ -249,7 +249,7 @@ def updateSelection():
 	#select all objects when ctrl + a is pressed
 	if ((this.keysDown[K_LCTRL] or this.keysDown[K_RCTRL]) and (this.keysDown[K_a])):
 		this.selection = []
-		for obj in this.roomObjects:
+		for obj in this.GMSObjects:
 			this.selection.append(obj)
 			
 	#return one menu when q is pressed
@@ -277,7 +277,7 @@ def updateObjects():
 	for i in this.objects:
 		i.update()
 	#update room objects
-	for i in this.roomObjects:
+	for i in this.GMSObjects:
 		i.update()
 	#update rooms and objects lists
 	this.roomsLayer.update()
