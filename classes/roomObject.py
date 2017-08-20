@@ -108,6 +108,8 @@ class RoomObject(pygame.sprite.Sprite):
 		return newObj
 		
 	def update(self):
+		if (not util.objectLayerActive(self)):
+			return
 		#if we are in follow mouse mode, don't do anything until we detect a leftclick
 		if (self.followMouse):
 			self.move(GM.mouseX - self.followXOffset,GM.mouseY - self.followYOffset)

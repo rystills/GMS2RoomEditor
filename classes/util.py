@@ -76,6 +76,23 @@ def writeLastUsedProject(projName):
 	with open("lastProject.cfg", "w") as file:
 		file.truncate()
 		file.write(projName)
+		
+#return whether or not the input object is in the correct room
+def objectRoomActive(obj):
+	return True if (not hasattr(obj,"room") or not obj.room) else obj.room == GM.activeRoom
+		
+#return whether or not the input object is on an active GMS or editor layer
+def objectLayerActive(obj):
+	#if the object has no layer, then it is always active
+	if (not obj.layer):
+		return objectRoomActive(obj)
+	
+	#if the object layer is a GMS layer, test it against the active layer string
+	if (type(obj.layer) is str):
+		return objectRoomActive(obj) if obj.layer == GM.activeGMSLayer else False
+	
+	#if the object layer is an editor layer, check if it is visible
+	return objectRoomActive(obj) if obj.layer.visible else False
 			
 #open a file dialog box for the user to locate and select their desired GameMaker Studio 2 project
 def openProjectDirectory():

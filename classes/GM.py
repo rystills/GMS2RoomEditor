@@ -122,29 +122,12 @@ def updateSelectionRect():
 		bot = max(this.boxStartPos[1],this.mouseY)
 		#create a rect for our box
 		this.selectionRect = pygame.rect.Rect(left,top,right-left,bot-top)
-		
-#return whether or not the input object is in the correct room
-def objectRoomActive(obj):
-	return True if (not hasattr(obj,"room") or not obj.room) else obj.room == this.activeRoom
-
-#return whether or not the input object is on an active GMS or editor layer
-def objectLayerActive(obj):
-	#if the object has no layer, then it is always active
-	if (not obj.layer):
-		return objectRoomActive(obj)
-	
-	#if the object layer is a GMS layer, test it against the active layer string
-	if (type(obj.layer) is str):
-		return objectRoomActive(obj) if obj.layer == this.activeGMSLayer else False
-	
-	#if the object layer is an editor layer, check if it is visible
-	return objectRoomActive(obj) if obj.layer.visible else False
 
 #select all objects in the selectionBox
 def selectInBox():
 	#set our selection to all colliding objects
 	for obj in this.roomObjects:
-		if ((objectLayerActive(obj)) and obj.rect.colliderect(this.selectionRect)):
+		if ((util.objectLayerActive(obj)) and obj.rect.colliderect(this.selectionRect)):
 			this.selection.append(obj)
 				
 #update keyboard state vars
@@ -223,11 +206,11 @@ def render():
 	
 	#render objects
 	for obj in this.objects:
-		if (obj.visible and objectLayerActive(obj)):
+		if (obj.visible and util.objectLayerActive(obj)):
 			this.screen.blit(obj.image,obj.rect)
 	#render room objects
 	for obj in this.roomObjects:
-		if (obj.visible and objectLayerActive(obj)):
+		if (obj.visible and util.objectLayerActive(obj)):
 			this.screen.blit(obj.image,obj.rect)
 	#draw selection box around selected object
 	this.drawSelectionBox()
