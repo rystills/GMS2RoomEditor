@@ -56,8 +56,8 @@ def init(screenWidthIn, screenHeightIn):
 	this.objectsLayer.visible = False
 	this.layersLayer = Layer(0,0,100,900,"Select Layer")
 	this.layersLayer.visible = False
-	this.editorUILayer = Layer(100,0,1400,900)
-	this.editorUILayer.clearColor = (0,0,0)
+	this.editorUILayer = Layer(100,0,1400,20)
+	this.editorUILayer.clearColor = (0,50,0)
 	this.editorUILayer.visible = False
 	
 	#init screen and window caption
@@ -208,9 +208,6 @@ def render():
 	#render the solid color (black) background to prepare the screen for a fresh game render
 	this.screen.fill((0,0,0))
 	#render layers
-	if (this.editorUILayer.visible):
-		this.editorUILayer.render()
-		this.screen.blit(this.editorUILayer.image,this.editorUILayer.rect)
 	if (this.roomsLayer.visible):
 		this.roomsLayer.render()
 		this.screen.blit(this.roomsLayer.image,this.roomsLayer.rect)
@@ -220,6 +217,9 @@ def render():
 	if (this.objectsLayer.visible):
 		this.objectsLayer.render()
 		this.screen.blit(this.objectsLayer.image,this.objectsLayer.rect)
+	if (this.editorUILayer.visible):
+		this.editorUILayer.render()
+		this.screen.blit(this.editorUILayer.image,this.editorUILayer.rect)
 	
 	#render objects
 	for obj in this.objects:

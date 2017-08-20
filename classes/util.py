@@ -69,7 +69,7 @@ def openProject(projFile):
 	
 #discard all changes, reverting the current room to its original state
 def discardRoomChanges():
-	pass
+	openRoom(GM.activeRoom)
 	
 #store a local reference to the last used project for future use
 def writeLastUsedProject(projName):
@@ -91,6 +91,11 @@ def openProjectDirectory():
 	
 #open the specified room, hide the rooms panel, and open the layers panel
 def openRoom(rm):
+	#kill any existing room objects
+	sprites = GM.roomObjects.sprites()
+	for spr in sprites:
+		spr.kill()
+	GM.selection = []
 	print("opening room: " + os.path.join(os.path.join(GM.rmDir,rm),rm + ".yy"))
 	GM.activeRoom = rm
 	GM.roomsLayer.visible = False
