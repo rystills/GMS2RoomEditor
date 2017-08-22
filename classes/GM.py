@@ -271,6 +271,8 @@ def updateSelection():
 def returnMenu():
 	if (this.layersLayer.visible):
 		this.roomsLayer.visible = True
+		#discard any unsaved changes when exiting the current room
+		util.discardRoomChanges(False)
 	else:
 		this.roomsLayer.visible = False
 		util.initMainMenu()

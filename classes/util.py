@@ -62,7 +62,8 @@ def openProject(projFile):
 	GM.infoObjects = {}
 	for i in range(len(objList)):
 		objSpr,hasAlpha = loadObjectSprite(objList[i])
-		GM.infoObjects[objList[i]] = ObjectInfo(objList[i],objSpr,hasAlpha)
+		objId = loadObjectId(objList[i])
+		GM.infoObjects[objList[i]] = ObjectInfo(objList[i],objId,objSpr,hasAlpha)
 		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,2 + 90*i,selectObject,[objList[i]],"left",objSpr,hasAlpha))
 		
 	#create room editor UI buttons
@@ -73,14 +74,15 @@ def openProject(projFile):
 	GM.roomsLayer.visible = True
 	
 #discard all changes, reverting the current room to its original state
-def discardRoomChanges():
+def discardRoomChanges(reloadRoom = True):
 	#kill any existing room objects
 	sprites = GM.GMSObjects.sprites()
 	for spr in sprites:
 		spr.kill()
 	
 	#reload the room
-	openRoom(GM.activeRoom)
+	if (reloadRoom):
+		openRoom(GM.activeRoom)
 	
 #store a local reference to the last used project for future use
 def writeLastUsedProject(projName):
@@ -142,14 +144,25 @@ def populateLayers():
 		layerName = curLayer["name"]
 		GM.layersLayer.add(Button(layerName,GM.fontSmall,2,45*i,selectLayer,[layerName],"left"))
 		if ("instances" in curLayer):
+			#create an instance here for each instance in the layer
 			for instance in curLayer["instances"]:
-				print(instance["objId"])
+				objName = findObjectById(instance["objId"])
+				newObj = GMSObject(instance["x"],instance["y"],objName, GM.GMSRoomLayer,instance["rotation"],instance["scaleX"])
+				newObj.GMSLayer = layerName
+				GM.GMSObjects.add(newObj)
 		
 	#set the active layer to the first layer by default
 	GM.activeGMSLayer = JSONLayers[0]["name"]
 	
 	#update grid x,y movement snap values
 	updateGridMoveSnaps(JSONLayers[0])
+	
+#find the name of the object corresponding to the input id
+def findObjectById(objId):
+	for key, value in GM.infoObjects.items():
+		if (value.objId == objId):
+			return key
+		print("Error: object with id {0} not found".format(objId))
 	
 #update GM grid movement snaps to movement snaps in the input JSON layers
 def updateGridMoveSnaps(JSONLayer):
@@ -236,6 +249,11 @@ def roundBase(x, base=5, nRoundDigits = 0):
 	x*=10**nRoundDigits
 	xR = int(base * round(float(x)/base))
 	return float(xR)/10**nRoundDigits
+
+#load the id corrsponding to the passed in obj name
+def loadObjectId(obj):
+	objFile = os.path.join(os.path.join(GM.objDir,obj),obj + ".yy")
+	return getFileVal(objFile,"id")
 
 #load the sprite corresponding to the passed in obj name
 def loadObjectSprite(obj):

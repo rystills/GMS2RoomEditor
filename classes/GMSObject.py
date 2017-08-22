@@ -36,6 +36,10 @@ class GMSObject(pygame.sprite.Sprite):
 		self.followMouse = False
 		self.pressed = False
 		self.visible = True
+		#if a non-zero rotation is passed in, set the new rotation here and update the image accordingly
+		if rot != 0:
+			self.rot = -1
+			self.setRotation(rot)
 		
 		#offset when in follow mouse mode
 		self.followXOffset = 0
@@ -103,10 +107,9 @@ class GMSObject(pygame.sprite.Sprite):
 	#create and return clone of this object
 	def clone(self):
 		#start rot at -1 so we can guaranteed override it to force update the image
-		newObj = GMSObject(self.x,self.y,self.objType,self.layer,-1,self.scale)
+		newObj = GMSObject(self.x,self.y,self.objType,self.layer,self.rot,self.scale)
 		GM.GMSObjects.add(newObj)
 		#'set' other object's rotation now so that its image rotation and scale are updated
-		newObj.setRotation(self.rot)
 		return newObj
 		
 	def update(self):
