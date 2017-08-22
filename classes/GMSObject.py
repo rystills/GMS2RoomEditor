@@ -22,7 +22,8 @@ class GMSObject(pygame.sprite.Sprite):
 		self.noSnapRot = self.rot
 		self.scale = scale
 		self.noSnapScale = self.scale
-		self.baseImage,self.imgHasAlpha = util.loadObjectSprite(self.objType)
+		self.baseImage = GM.infoObjects[objType].img
+		self.imgHasAlpha = GM.infoObjects[objType].imgHasAlpha
 		self.image = self.baseImage.copy()
 		self.rect = self.image.get_rect()
 		#room objects use a GMSLayer rather than an Editor layer

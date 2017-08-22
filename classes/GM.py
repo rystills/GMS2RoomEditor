@@ -63,6 +63,9 @@ def init(screenWidthIn, screenHeightIn):
 	this.GMSRoomLayer.clearColor = (0,0,0)
 	this.GMSRoomLayer.visible = False
 	
+	#dict of objName : objectInfo instance, where each instance contains info about that GMS object
+	this.infoObjects = {}
+	
 	#init screen and window caption
 	this.screen = pygame.display.set_mode([this.screenWidth, this.screenHeight])
 	pygame.display.set_caption("Room Editor")

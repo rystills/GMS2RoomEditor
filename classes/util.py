@@ -6,6 +6,7 @@ from button import Button
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 from GMSObject import GMSObject
+from objectInfo import ObjectInfo
 import json
 
 #get the value of val in the file located at filepath inFile
@@ -55,10 +56,13 @@ def openProject(projFile):
 	for i in range(len(rmList)):
 		GM.roomsLayer.add(Button(rmList[i],GM.fontSmall,2,2 + 45*i,openRoom,[rmList[i]],"left"))
 		
-	#create a button for each object
+	#store information about each object in an objectInfo instance, and create buttons for them
 	objList = (next(os.walk(GM.objDir))[1])
+	#clear the dict of info objects before repopulating it
+	GM.infoObjects = {}
 	for i in range(len(objList)):
 		objSpr,hasAlpha = loadObjectSprite(objList[i])
+		GM.infoObjects[objList[i]] = ObjectInfo(objList[i],objSpr,hasAlpha)
 		GM.objectsLayer.add(Button(objList[i],GM.fontSmall,2,2 + 90*i,selectObject,[objList[i]],"left",objSpr,hasAlpha))
 		
 	#create room editor UI buttons
@@ -132,15 +136,17 @@ def populateLayers():
 	print("loading layers from room: " + rmFile)
 	JSONLayers = getFileVal(rmFile,"layers")
 	
-	#append the layer ids to a new list
-	layerNames = [layer["name"] for layer in JSONLayers]
-	
-	#add each layer name to the layer list
-	for i in range(len(layerNames)):
-		GM.layersLayer.add(Button(layerNames[i],GM.fontSmall,2,45*i,selectLayer,[layerNames[i]],"left"))
+	#add each layer name to the layer list, and create the instances in that layer
+	for i in range(len(JSONLayers)):
+		curLayer = JSONLayers[i]
+		layerName = curLayer["name"]
+		GM.layersLayer.add(Button(layerName,GM.fontSmall,2,45*i,selectLayer,[layerName],"left"))
+		if ("instances" in curLayer):
+			for instance in curLayer["instances"]:
+				print(instance["objId"])
 		
 	#set the active layer to the first layer by default
-	GM.activeGMSLayer = layerNames[0]
+	GM.activeGMSLayer = JSONLayers[0]["name"]
 	
 	#update grid x,y movement snap values
 	updateGridMoveSnaps(JSONLayers[0])
@@ -159,7 +165,7 @@ def selectLayer(layer):
 		#deselect all objects when switching layers
 		GM.selection = []
 		
-		#update grid x,y movement snap values
+		#update grid x,y movement snap values:
 		#locate the file corresponding to the currently active room
 		rmFile = os.path.join(os.path.join(GM.rmDir,GM.activeRoom),GM.activeRoom + ".yy")
 		
