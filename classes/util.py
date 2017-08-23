@@ -73,6 +73,12 @@ def openProject(projFile):
 	#show rooms layer
 	GM.roomsLayer.visible = True
 	
+#delete all room and layer data so that we can return to the main menu
+def closeProject():
+	GM.roomsLayer.empty()
+	GM.layersLayer.empty()
+	GM.objectsLayer.empty()
+	
 #discard all changes, reverting the current room to its original state
 def discardRoomChanges(reloadRoom = True):
 	#kill any existing room objects

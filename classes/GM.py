@@ -275,6 +275,7 @@ def returnMenu():
 		util.discardRoomChanges(False)
 	else:
 		this.roomsLayer.visible = False
+		util.closeProject()
 		util.initMainMenu()
 	this.layersLayer.visible = False
 	this.objectsLayer.visible = False

@@ -8,7 +8,7 @@ import util
 import GM
 from pygame.locals import K_e,K_r,K_RALT,K_LALT,K_RCTRL,K_LCTRL
 
-#class that represents an object present in the curretly selected room
+#class that represents an object present in the currently selected room
 class GMSObject(pygame.sprite.Sprite):
 	def __init__(self,x,y,objType,layer=None,rot=0,scale=1):
 		pygame.sprite.Sprite.__init__(self)
@@ -26,7 +26,6 @@ class GMSObject(pygame.sprite.Sprite):
 		self.imgHasAlpha = GM.infoObjects[objType].imgHasAlpha
 		self.image = self.baseImage.copy()
 		self.rect = self.image.get_rect()
-		#room objects use a GMSLayer rather than an Editor layer
 		self.room = GM.activeRoom
 		self.layer = layer
 		self.GMSLayer = GM.activeGMSLayer
